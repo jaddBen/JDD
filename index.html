@@ -1,0 +1,1239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#F2EEE6" media="(prefers-color-scheme:light)">
+<meta name="theme-color" content="#131019" media="(prefers-color-scheme:dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>PLP — Push · Legs · Pull</title>
+<style>
+/* ============================================================
+   PLP — a 3-day natural training program. Built phone-first.
+   System fonts only, so it works with no connection.
+   ============================================================ */
+
+:root{
+  --ground:#F2EEE6; --surface:#FBF9F5; --surface-2:#E8E2D6; --plate:#FFFFFF;
+  --ink:#191626; --ink-2:#5C5570; --ink-3:#8B8398;
+  --line:#DAD2C4; --line-soft:#E6DFD2;
+  --accent:#3B2ED0; --saffron:#B0700F;
+  --d1:#3B2ED0; --d2:#1F7053; --d3:#AC3F21;
+  --on-c:#FFFFFF; --plate-filter:none;
+  --shadow:0 1px 2px rgba(25,22,38,.06), 0 8px 24px -12px rgba(25,22,38,.22);
+  --shadow-lift:0 2px 4px rgba(25,22,38,.08), 0 18px 40px -16px rgba(25,22,38,.32);
+
+  --display:"Bahnschrift","DIN Alternate","Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
+  --text:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,"Helvetica Neue",sans-serif;
+  --mono:Consolas,"SF Mono",ui-monospace,Menlo,monospace;
+
+  --r-sm:10px; --r:16px; --r-lg:22px;
+  --pad:clamp(16px,5vw,30px);
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#131019; --surface:#1C1926; --surface-2:#252132; --plate:#FFFFFF;
+    --ink:#F1EDE4; --ink-2:#A79FB8; --ink-3:#7A7290;
+    --line:#332E44; --line-soft:#282435;
+    --accent:#8F80FF; --saffron:#EEB055;
+    --d1:#8F80FF; --d2:#4CC08C; --d3:#F27B52;
+    --on-c:#131019; --plate-filter:brightness(.86) contrast(1.03);
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+    --shadow-lift:0 2px 4px rgba(0,0,0,.5), 0 18px 40px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#131019; --surface:#1C1926; --surface-2:#252132; --plate:#FFFFFF;
+  --ink:#F1EDE4; --ink-2:#A79FB8; --ink-3:#7A7290;
+  --line:#332E44; --line-soft:#282435;
+  --accent:#8F80FF; --saffron:#EEB055;
+  --d1:#8F80FF; --d2:#4CC08C; --d3:#F27B52;
+  --on-c:#131019; --plate-filter:brightness(.86) contrast(1.03);
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+  --shadow-lift:0 2px 4px rgba(0,0,0,.5), 0 18px 40px -16px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--text);
+  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
+button,input{font:inherit;color:inherit}
+button{background:none;border:none;cursor:pointer;touch-action:manipulation}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:3px;border-radius:6px}
+h1,h2,h3,h4{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
+img,video{max-width:100%;display:block}
+
+.wrap{max-width:720px;margin:0 auto;padding:0 var(--pad) calc(72px + var(--safe-b))}
+.view{display:none}
+.view.on{display:block;animation:rise .28s cubic-bezier(.2,.7,.3,1)}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms !important;transition-duration:.01ms !important}}
+
+/* ───────── masthead ───────── */
+.masthead{padding:clamp(30px,9vw,56px) 0 clamp(18px,4vw,26px)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-3);display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.eyebrow::after{content:"";flex:1;height:1px;background:var(--line)}
+.masthead h1{font-size:clamp(56px,20vw,92px);line-height:.86;letter-spacing:-.025em;
+  font-stretch:115%;font-weight:700}
+.masthead h1 em{display:block;font-style:normal;font-size:.26em;font-stretch:85%;font-weight:400;
+  letter-spacing:.26em;text-transform:uppercase;color:var(--ink-2);margin-top:16px}
+.sub{color:var(--ink-2);max-width:42ch;margin:18px 0 0;font-size:15px}
+.sub b{color:var(--ink);font-weight:600}
+.creed{display:inline-flex;align-items:center;gap:9px;margin-top:18px;padding:8px 15px;
+  border:1px solid var(--line);border-radius:100px;font-size:13px;color:var(--ink-2);background:var(--surface)}
+.creed .dot{width:7px;height:7px;border-radius:50%;background:var(--d2);flex:none}
+
+/* ───────── day buttons ───────── */
+.days{display:flex;flex-direction:column;gap:14px;margin-top:28px}
+.day-card{position:relative;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;
+  width:100%;text-align:left;padding:20px 20px 20px 26px;background:var(--surface);
+  border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);overflow:hidden;
+  transition:transform .16s cubic-bezier(.2,.7,.3,1),box-shadow .16s,border-color .16s}
+.day-card::before{content:"";position:absolute;inset:0 auto 0 0;width:6px;background:var(--c)}
+.day-card:active{transform:scale(.985)}
+@media (hover:hover){.day-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lift);border-color:var(--c)}}
+.day-n{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--c)}
+.day-card h2{font-size:clamp(30px,9vw,40px);font-stretch:110%;line-height:1;letter-spacing:-.015em;margin-top:6px}
+.day-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.day-tags span{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;color:var(--ink-2);
+  padding:4px 9px;border:1px solid var(--line);border-radius:100px;background:var(--ground)}
+.ring{width:56px;height:56px;flex:none;position:relative}
+.ring svg{transform:rotate(-90deg);display:block}
+.ring i{position:absolute;inset:0;display:grid;place-items:center;font-style:normal;
+  font-family:var(--mono);font-size:12px;font-weight:700;color:var(--c)}
+
+.map-link{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;width:100%;
+  text-align:left;margin-top:14px;padding:16px 18px;background:var(--surface);
+  border:1px solid var(--line);border-radius:var(--r);transition:border-color .15s,transform .15s}
+.map-link:active{transform:scale(.99)}
+@media (hover:hover){.map-link:hover{border-color:var(--ink-3)}}
+.map-link .mi{width:42px;height:42px;display:grid;place-items:center;border-radius:12px;
+  background:var(--ground);border:1px solid var(--line-soft);color:var(--ink-2)}
+.map-link .mt b{display:block;font-size:15px;font-weight:600}
+.map-link .mt small{display:block;font-size:12.5px;color:var(--ink-3);margin-top:2px}
+.map-link .chev{color:var(--ink-3)}
+
+/* ───────── advice ───────── */
+.adv{display:flex;flex-direction:column;gap:14px;margin-top:22px}
+.adv details{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.adv summary{display:grid;grid-template-columns:auto 1fr auto;gap:13px;align-items:center;
+  padding:16px 18px;cursor:pointer;list-style:none;min-height:60px}
+.adv summary::-webkit-details-marker{display:none}
+.adv summary .num{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--accent);
+  width:26px;height:26px;display:grid;place-items:center;border-radius:50%;
+  background:var(--ground);border:1px solid var(--line)}
+.adv summary b{font-size:15.5px;font-weight:600;line-height:1.3}
+.adv summary .chev{color:var(--ink-3);transition:transform .2s}
+.adv details[open] summary .chev{transform:rotate(90deg)}
+.adv details[open] summary{border-bottom:1px solid var(--line-soft)}
+.adv .in{padding:16px 18px 18px;font-size:14.5px;color:var(--ink-2);line-height:1.65}
+.adv .in p{margin:0 0 12px}
+.adv .in p:last-child{margin-bottom:0}
+.adv .in em{font-style:normal;font-weight:600;color:var(--ink)}
+.adv .in ul{margin:0 0 12px;padding-left:18px}
+.adv .in li{margin-bottom:7px}
+.adv .in video{width:100%;border-radius:12px;background:#0e0d12;margin:4px 0 12px}
+.key{background:var(--ground);border:1px solid var(--line);border-left:3px solid var(--saffron);
+  border-radius:10px;padding:11px 14px;margin:0 0 12px;font-size:13.5px;color:var(--ink)}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:12px}
+.tbl th,.tbl td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--line-soft)}
+.tbl th{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.tbl td:nth-child(n+2){font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tbl-wrap{overflow-x:auto}
+
+.chart{margin-top:20px;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;
+  background:var(--plate);filter:var(--plate-filter)}
+.chart img{width:100%;height:auto}
+
+.foot{margin-top:32px;padding-top:20px;border-top:1px solid var(--line-soft);
+  color:var(--ink-3);font-size:12.5px;line-height:1.7}
+.foot b{color:var(--ink-2)}
+
+/* ───────── topbar ───────── */
+.topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:10px;
+  padding:12px 0;margin-bottom:20px;background:color-mix(in srgb,var(--ground) 90%,transparent);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line-soft)}
+.back{display:inline-flex;align-items:center;gap:6px;min-height:42px;padding:0 16px 0 11px;
+  border:1px solid var(--line);border-radius:100px;font-size:14px;color:var(--ink-2);background:var(--surface)}
+.icon-btn{width:42px;height:42px;flex:none;display:grid;place-items:center;border-radius:50%;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink-2)}
+.topbar .grow{flex:1}
+
+/* ───────── day view ───────── */
+.day-head .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--c)}
+.day-head h2{font-size:clamp(38px,13vw,58px);font-stretch:112%;line-height:.92;margin:8px 0 0;letter-spacing:-.02em}
+.day-head p{color:var(--ink-2);font-size:14.5px;margin:14px 0 0;max-width:52ch}
+
+.warmup{margin:22px 0 24px;padding:15px 17px;border-radius:var(--r);background:var(--surface);
+  border:1px solid var(--line);border-left:3px solid var(--saffron)}
+.warmup h3{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--saffron);font-weight:700}
+.warmup p{margin:8px 0 0;font-size:14px;color:var(--ink-2)}
+
+.ex-list{display:flex;flex-direction:column;gap:10px}
+.ex-row{display:grid;grid-template-columns:64px 1fr auto;gap:13px;align-items:center;width:100%;
+  text-align:left;padding:10px 14px 10px 10px;background:var(--surface);
+  border:1px solid var(--line);border-radius:var(--r);transition:border-color .15s,transform .15s}
+.ex-row:active{transform:scale(.99)}
+@media (hover:hover){.ex-row:hover{border-color:var(--c)}}
+.ex-row.done{border-color:color-mix(in srgb,var(--c) 50%,var(--line))}
+.ex-row.done .ex-name{color:var(--ink-2)}
+.thumb{width:64px;height:64px;border-radius:11px;background:var(--plate);overflow:hidden;
+  display:grid;place-items:center;border:1px solid var(--line-soft);position:relative;filter:var(--plate-filter)}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.thumb .tick{position:absolute;inset:0;display:none;place-items:center;
+  background:color-mix(in srgb,var(--c) 88%,transparent);color:var(--on-c);font-size:24px;font-weight:700}
+.ex-row.done .thumb .tick{display:grid}
+.thumb .vtag{position:absolute;right:3px;bottom:3px;width:17px;height:17px;border-radius:50%;
+  background:rgba(20,17,28,.85);display:grid;place-items:center;color:#fff}
+.ex-name{display:block;font-weight:600;font-size:15.5px;line-height:1.25}
+.ex-tgt{display:block;font-size:12.5px;color:var(--ink-3);margin-top:3px}
+.ex-dose{font-family:var(--mono);font-size:13.5px;font-weight:700;color:var(--c);
+  font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+.ex-dose small{display:block;font-weight:400;font-size:10.5px;color:var(--ink-3);margin-top:3px;letter-spacing:.04em}
+
+.day-actions{display:flex;flex-direction:column;gap:10px;margin-top:24px}
+.btn{min-height:50px;padding:0 20px;border-radius:100px;border:1px solid var(--line);
+  background:var(--surface);font-size:15px;color:var(--ink-2);
+  display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn-solid{background:var(--c);border-color:var(--c);color:var(--on-c);font-weight:600}
+
+/* ───────── exercise sheet ───────── */
+.scrim{position:fixed;inset:0;z-index:40;background:rgba(15,12,22,.55);
+  opacity:0;pointer-events:none;transition:opacity .25s}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;z-index:50;left:50%;bottom:0;width:min(720px,100%);height:100%;
+  display:flex;flex-direction:column;background:var(--ground);
+  transform:translate(-50%,100%);transition:transform .32s cubic-bezier(.2,.75,.28,1)}
+.sheet.on{transform:translate(-50%,0)}
+@media (min-width:721px){
+  .sheet{height:auto;max-height:94vh;border:1px solid var(--line);border-bottom:0;
+    border-radius:var(--r-lg) var(--r-lg) 0 0}
+}
+.sheet-head{flex:none;display:flex;align-items:center;gap:12px;
+  padding:calc(10px + env(safe-area-inset-top,0px)) var(--pad) 12px;
+  border-bottom:1px solid var(--line-soft);background:var(--ground)}
+.sheet-head .grow{flex:1;min-width:0}
+.sheet-head h3{font-size:19px;font-stretch:106%;line-height:1.2}
+.sheet-head .step{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--c);margin-bottom:4px}
+.sheet-body{flex:1;overflow-y:auto;overscroll-behavior:contain;
+  padding:0 var(--pad) calc(120px + var(--safe-b));-webkit-overflow-scrolling:touch}
+
+/* the demonstration */
+.demo{position:relative;margin:16px 0 0;border-radius:var(--r);overflow:hidden;
+  background:var(--plate);border:1px solid var(--line);aspect-ratio:4/3;filter:var(--plate-filter)}
+.demo.vid{background:#0e0d12}
+.demo video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#0e0d12}
+.demo img.gif{position:absolute;inset:0;margin:auto;width:auto;height:100%;max-width:100%;
+  object-fit:contain;image-rendering:auto}
+.demo .badge{position:absolute;top:10px;left:10px;z-index:2;padding:5px 11px;border-radius:100px;
+  background:rgba(20,17,28,.85);color:#fff;font-family:var(--mono);font-size:10px;
+  letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.demo .pausebtn{position:absolute;top:8px;right:8px;z-index:2;width:38px;height:38px;border-radius:50%;
+  display:grid;place-items:center;background:rgba(20,17,28,.85);color:#fff}
+.demo .missing{position:absolute;inset:0;display:grid;place-items:center;text-align:center;
+  padding:24px;color:#6b6478;font-size:13px;line-height:1.6}
+.demo-cap{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin:9px 2px 24px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3);min-height:32px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:100px;overflow:hidden;background:var(--surface)}
+.seg button{padding:7px 14px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3);min-height:32px}
+.seg button.on{background:var(--c);color:var(--on-c);font-weight:700}
+
+/* muscles worked */
+.mus-wrap{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  padding:14px 14px 13px;margin-bottom:24px}
+.mus{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.body{position:relative;background:var(--plate);border-radius:12px;overflow:hidden;
+  filter:var(--plate-filter);padding-bottom:16px}
+.body>img:first-child{width:100%;height:auto;display:block}
+.body .ov{position:absolute;top:0;left:0;width:100%;height:auto}
+.body .ov.sec{opacity:.45}
+.body span{position:absolute;bottom:4px;left:0;right:0;text-align:center;
+  font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#8B8398}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px}
+.chip{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:100px;
+  font-size:12.5px;border:1px solid var(--line);background:var(--ground);color:var(--ink-2)}
+.chip .sw{width:9px;height:9px;border-radius:3px;background:#e0342a;flex:none}
+.chip.sec .sw{background:#f0a49e}
+
+.dose{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-bottom:24px}
+.dose div{background:var(--surface);padding:12px 10px}
+.dose dt{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
+.dose dd{margin:5px 0 0;font-family:var(--display);font-stretch:104%;font-weight:700;
+  font-size:19px;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.dose dd.c{color:var(--c)}
+
+.sec-h{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-3);margin:0 0 13px;display:flex;align-items:center;gap:10px;font-weight:700}
+.sec-h::after{content:"";flex:1;height:1px;background:var(--line-soft)}
+.cues{list-style:none;margin:0 0 26px;padding:0;display:flex;flex-direction:column;gap:12px}
+.cues li{display:grid;grid-template-columns:auto 1fr;gap:12px;font-size:14.5px;color:var(--ink-2);line-height:1.55}
+.cues b{font-family:var(--mono);font-size:10.5px;font-weight:700;color:var(--c);padding-top:3px}
+.cues em{color:var(--ink);font-style:normal;font-weight:600}
+
+.tracker{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  padding:16px 16px 18px;margin-bottom:22px}
+.tracker .hint{font-size:13.5px;color:var(--ink-2)}
+.sets{display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,1fr));gap:9px;margin-top:13px}
+.set-pill{min-height:52px;border-radius:var(--r-sm);border:1.5px solid var(--line);background:var(--ground);
+  font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--ink-3);
+  font-variant-numeric:tabular-nums;transition:.14s}
+.set-pill.on{background:var(--c);border-color:var(--c);color:var(--on-c)}
+.wt{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:13.5px;color:var(--ink-2)}
+.wt input{flex:1;max-width:130px;min-height:46px;padding:0 13px;border-radius:var(--r-sm);
+  border:1px solid var(--line);background:var(--ground);font-family:var(--mono);font-size:14px}
+
+.nav{position:fixed;z-index:45;left:50%;transform:translateX(-50%);
+  bottom:calc(12px + var(--safe-b));width:min(688px,calc(100% - 2*var(--pad)));display:none;gap:9px}
+.sheet.on ~ .nav{display:flex}
+.nav button{flex:1;min-height:52px;border-radius:100px;border:1px solid var(--line);
+  background:var(--surface);box-shadow:var(--shadow-lift);font-size:14.5px;color:var(--ink-2);
+  display:inline-flex;align-items:center;justify-content:center;gap:7px}
+.nav button.primary{background:var(--c);border-color:var(--c);color:var(--on-c);font-weight:600;flex:1.6}
+.nav button:disabled{opacity:.4}
+
+.credit{font-size:11.5px;color:var(--ink-3);line-height:1.7;margin:0;
+  padding-top:16px;border-top:1px solid var(--line-soft)}
+
+.timer{position:fixed;z-index:60;left:50%;bottom:calc(12px + var(--safe-b));
+  transform:translate(-50%,180%);width:min(688px,calc(100% - 2*var(--pad)));
+  display:flex;align-items:center;gap:14px;padding:11px 12px 11px 20px;
+  background:var(--ink);color:var(--ground);border-radius:100px;
+  box-shadow:0 14px 36px -10px rgba(0,0,0,.65);transition:transform .3s cubic-bezier(.2,.75,.28,1)}
+.timer.on{transform:translate(-50%,0)}
+.timer .grow{flex:1}
+.timer .l{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;opacity:.6}
+.timer .t{font-family:var(--mono);font-size:21px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+.timer button{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.16);
+  color:var(--ground);display:grid;place-items:center;font-family:var(--mono);font-size:12px;font-weight:700}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<!-- ══════════ HOME ══════════ -->
+<section id="home" class="view on">
+  <header class="masthead">
+    <div class="eyebrow">Push · Legs · Pull</div>
+    <h1>PLP<em>3-day split</em></h1>
+    <p class="sub">Three sessions a week, one rest day between each. Every exercise shows the
+      movement as a <b>3D animation with the working muscles shaded red</b>, plus a body
+      diagram, sets, reps and form cues. Seven of them also have a filmed demo you can switch to.</p>
+    <div class="creed"><span class="dot"></span> Natural training — no steroids</div>
+  </header>
+
+  <div class="days" id="dayCards"></div>
+
+  <button class="map-link" id="mapLink">
+    <span class="mi">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.6"/><path d="M5.5 10.5h13M12 8v13M8 21l1.2-6M16 21l-1.2-6"/></svg>
+    </span>
+    <span class="mt">
+      <b>Muscle map</b>
+      <small>Every muscle named, front and back</small>
+    </span>
+    <svg class="chev" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+  </button>
+
+  <button class="map-link" id="adviceLink">
+    <span class="mi">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.4 5.4 5.6.6-4.2 3.9 1.2 5.6L12 15.7 6.9 18.5l1.2-5.6L4 9l5.6-.6z"/></svg>
+    </span>
+    <span class="mt">
+      <b>Advice that matters</b>
+      <small>Progression, food, sleep, first chin-up</small>
+    </span>
+    <svg class="chev" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+  </button>
+
+  <p class="foot">
+    Built on the PLP split from the reel by <b>@bigg_bosse_casa</b> — the reel names the split and
+    nothing more, so the exercises, sets and reps here are a standard hypertrophy build-out of it.
+    <b>No two-handed cable machines</b>: the chest fly and the rear-delt work are done with
+    dumbbells instead.<br><br>
+    Runs fully offline. Exercise animations <b>© Gym visual</b> — gymvisual.com — used here for
+    personal training only. Filmed demos from Wikimedia Commons (CC BY 3.0), muscle diagrams from
+    the <b>wger</b> project, muscle chart by <b>OpenStax</b> (CC BY 4.0). Full list in
+    media/CREDITS.md.
+  </p>
+</section>
+
+<!-- ══════════ DAY ══════════ -->
+<section id="day" class="view">
+  <div class="topbar">
+    <button class="back" id="back">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      Days
+    </button>
+    <span class="grow"></span>
+    <button class="icon-btn" id="theme" aria-label="Switch light or dark">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/></svg>
+    </button>
+  </div>
+  <div id="dayView"></div>
+</section>
+
+<!-- ══════════ ADVICE ══════════ -->
+<section id="advice" class="view">
+  <div class="topbar">
+    <button class="back" id="backAdvice">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      Days
+    </button>
+    <span class="grow"></span>
+  </div>
+  <div class="day-head">
+    <div class="kicker" style="color:var(--ink-3)">Advice</div>
+    <h2 style="color:var(--ink)">What actually moves the needle</h2>
+    <p>Ten things, roughly in the order they matter. The first three are worth more than
+       everything else in this app put together.</p>
+  </div>
+
+  <div class="adv">
+    <details open>
+      <summary><span class="num">01</span><b>Turn up, for years</b><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></summary>
+      <div class="in">
+        <p class="key">Three sessions a week for two years beats a perfect program you quit in March.</p>
+        <p>Nothing else on this list matters if you train for six weeks and stop. A session where you
+           are tired and only manage 80% still counts. A session you skip does not.</p>
+        <p>When life gets in the way, <em>shrink the session, don't cancel it</em>. Do the first three
+           exercises and go home. That keeps the habit alive, which is the actual asset.</p>
+</div>
+    </details>
+    <details>
+      <summary><span class="num">02</span><b>Add weight or reps, on purpose</b><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></summary>
+      <div class="in">
+        <p>Muscle grows because you keep asking it for more. If your bench press feels the same in
+           June as it did in March, you will look the same too.</p>
+        <p><em>Double progression</em> is the simplest way to run this, and it is why every exercise
+           here has a rep <em>range</em> instead of one number:</p>
+        <ul>
+          <li>Bench press says 6&ndash;8. Pick a weight you can get 6 with.</li>
+          <li>Stay on that weight until you hit <em>8 reps on every set</em>.</li>
+          <li>Then add the smallest jump available &mdash; 2.5&nbsp;kg on a barbell, one dumbbell size up.</li>
+          <li>You will drop back to 6 reps. That is correct. Climb again.</li>
+        </ul>
+        <p>Write the weight in the app every session. You cannot beat a number you never recorded.</p>
+</div>
+    </details>
+    <details>
+      <summary><span class="num">03</span><b>Sleep is the actual supplement</b><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></summary>
+      <div class="in">
+        <p class="key">7&ndash;9 hours. Not negotiable, and free.</p>
+        <p>You do not grow in the gym &mdash; you grow in bed. Training is the signal, sleep is when the
+           building happens. Living on five or six hours blunts recovery, drops your strength on the
+           big lifts and drives hunger up.</p>
+        <p>If the choice is an extra hour of sleep or a 6&nbsp;a.m. session on four hours,
+           <em>take the sleep</em> and train later.</p>
+</div>
+    </details>
+    <details>
+      <summary><span class="num">04</span><b>Leave one or two reps in the tank</b><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></summary>
+      <div class="in">
+        <p>Sets need to be genuinely hard, but grinding every set to total failure wrecks your recovery
+           and makes everything after it worse, without building more muscle.</p>
+        <ul>
+          <li><em>Big lifts</em> &mdash; squat, bench, rows, presses: stop when you could have done
+              1&ndash;2 more clean reps. If your form is breaking, the set was already over.</li>
+          <li><em>Small stuff</em> &mdash; curls, lateral raises, pushdowns, calves: take these close to
+              failure. There is little to recover from, so chase the burn.</li>
+        </ul>
+        <p>A rough test: if you could not have managed <em>one</em> more rep on a compound, you went too
+           far. If you could have managed <em>five</em>, that was a warm-up.</p>
+</div>
+    </details>
+    <details>
+      <summary><span class="num">05</span><b>Eat enough protein, and enough food</b><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></summary>
+      <div class="in">
+        <p class="key">Protein: roughly 1.6&ndash;2.2&nbsp;g per kg of bodyweight, every day.</p>
+        <p>At 70&nbsp;kg that is about 110&ndash;155&nbsp;g a day, spread over 3&ndash;4 meals. Eggs,
+           chicken, beef, fish, milk, yoghurt, lentils, chickpeas &mdash; whatever you will actually eat
+           again and again.</p>
+        <p>Calories decide whether you gain or lose. Protein and training decide whether that change is
+           muscle.</p>
+        <ul>
+          <li><em>To build:</em> a small surplus. Aim to gain about 0.25&ndash;0.5% of bodyweight per
+              week &mdash; at 70&nbsp;kg, roughly 200&ndash;350&nbsp;g. Faster than that is mostly fat.</li>
+          <li><em>To lean out:</em> a moderate deficit, losing about 0.5&ndash;0.75% per week. Keep
+              protein high and keep training heavy so you hold onto the muscle.</li>
+        </ul>
+        <p>Meal timing, shakes and anabolic windows are rounding errors next to hitting your daily
+           totals consistently.</p>
+</div>
+    </details>
+    <details>
+      <summary><span class="num">06</span><b>Form first, ego last</b><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></summary>
+      <div class="in">
+        <p>The muscle cannot read the number on the bar. It only knows tension through a full range of
+           motion. Half-repping 100&nbsp;kg builds less chest than controlled full reps with
+           70&nbsp;kg &mdash; and it is how people end up hurt and out for a month.</p>
+        <ul>
+          <li>Control the lowering phase. A lot of the growth lives there.</li>
+          <li>Full range: bar to the chest, thigh below parallel, full stretch on curls.</li>
+          <li>If you have to swing it, bounce it or shorten it, the weight is too heavy.</li>
+        </ul>
+        <p>Film a set from the side now and then. It is more honest than how it felt.</p>
+</div>
+    </details>
+    <details>
+      <summary><span class="num">07</span><b>Getting your first chin-up</b><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></summary>
+      <div class="in">
+        <p>This is what Day&nbsp;3 is building toward:</p>
+        <video id="goalVid" autoplay loop muted playsinline preload="none"></video>
+        <p>Three things get you there, and you can run all of them at once:</p>
+        <ul>
+          <li><em>Lat pulldowns</em> &mdash; already the first exercise on Day&nbsp;3. Same movement,
+              same muscles, and you pick the weight. Keep adding to the stack. Once you can pull down
+              roughly your own bodyweight for 8 clean reps, a real chin-up is usually there.</li>
+          <li><em>Negatives</em> &mdash; jump or step to the top, chin over the bar, then lower yourself
+              as slowly as you can. Aim for 5 seconds down, 3 sets of 3 at the end of Day&nbsp;3. This
+              is the single most effective piece.</li>
+          <li><em>Dead hangs</em> &mdash; just hang for 20&ndash;30 seconds, twice. Grip is often the real
+              limit, not the back.</li>
+        </ul>
+        <p>Train it twice a week and most people get their first one inside 6&ndash;12 weeks. Being
+           lighter helps too &mdash; it is your own bodyweight you are lifting.</p>
+        <p>No pull-up bar at all? A <em>resistance band</em> anchored high, or inverted rows with a
+           barbell set at hip height, both build the same thing. Neither needs a special machine.</p>
+</div>
+    </details>
+    <details>
+      <summary><span class="num">08</span><b>What to actually expect</b><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></summary>
+      <div class="in">
+        <p>Training naturally, muscle comes slowly. These are honest ballparks rather than promises;
+           genetics, age, food and sleep move them around a lot.</p>
+        <div class="tbl-wrap">
+        <table class="tbl">
+          <tr><th>Stage</th><th>Realistic muscle gain</th></tr>
+          <tr><td>First year, trained well</td><td>8&ndash;12 kg</td></tr>
+          <tr><td>Second year</td><td>4&ndash;6 kg</td></tr>
+          <tr><td>Third year</td><td>2&ndash;3 kg</td></tr>
+          <tr><td>After that</td><td>1 kg or less</td></tr>
+        </table>
+        </div>
+        <p>The fast strength jumps in the first few months are mostly your nervous system learning the
+           lifts, which is why the bar climbs before you look any different. That is normal.
+           <em>Keep going.</em></p>
+        <p>Physiques that appear in twelve weeks online are either lying about the timeline or lying
+           about the drugs. This program is built for the other route.</p>
+</div>
+    </details>
+    <details>
+      <summary><span class="num">09</span><b>Traps to avoid</b><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></summary>
+      <div class="in">
+        <ul>
+          <li><em>Soreness is not the scoreboard.</em> You can be wrecked by a session that built
+              nothing, and grow from one that left you fine. Judge by the logbook.</li>
+          <li><em>Don't change program every three weeks.</em> Give this 10&ndash;12 weeks before you
+              judge it. Hopping between routines is the most common reason people stay the same size
+              for years.</li>
+          <li><em>Don't skip legs.</em> Day&nbsp;2 sits in the middle of the week on purpose, so it is
+              harder to dodge.</li>
+          <li><em>Take the full rest.</em> The timer is not a suggestion &mdash; three minutes after a
+              heavy squat set is what lets the next set be heavy too.</li>
+          <li><em>Deload when you stall.</em> If the numbers go nowhere for two or three weeks and you
+              feel beaten up, take one week at about half the sets. You come back stronger.</li>
+          <li><em>Pain is not soreness.</em> Sharp, joint-centred or one-sided pain means stop that
+              exercise and get it looked at. Training through it turns a week off into three months off.</li>
+        </ul>
+</div>
+    </details>
+    <details>
+      <summary><span class="num">10</span><b>Every muscle, and what covers it</b><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></summary>
+      <div class="in">
+        <p>Counted straight from the program: <em>direct</em> is sets where the muscle is the
+           target, <em>assisting</em> is sets where it helps. Roughly 10&ndash;20 direct sets a week
+           is the useful range for a muscle you want to grow.</p>
+        <div class="tbl-wrap"><table class="tbl" id="coverTable"></table></div>
+        <p>Two things are deliberately stabiliser-only. Your <em>lower back</em> works hard holding
+           position on squats, Romanian deadlifts and rows &mdash; that is plenty, and adding direct
+           work on top usually just costs you recovery. <em>Obliques</em> get the same treatment from
+           lunges and the leg raise.</p>
+        <p>If you want them anyway, add either of these at the end of a day &mdash; they are optional,
+           not missing:</p>
+        <ul>
+          <li><em>Back extensions</em> &mdash; 2&times;12&ndash;15, end of Day&nbsp;2.</li>
+          <li><em>Side plank</em> &mdash; 2&times;30&nbsp;s each side, end of Day&nbsp;2.</li>
+          <li><em>Calves</em> are on the low side at 4 sets. If yours are stubborn, add a second
+              calf exercise to Day&nbsp;2 for 3 more.</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+
+  <p class="credit" style="margin-top:22px">
+    General training guidance, not medical or personal advice. If you have an injury or a health
+    condition, get it checked before you start.
+  </p>
+</section>
+
+<!-- ══════════ MUSCLE MAP ══════════ -->
+<section id="map" class="view">
+  <div class="topbar">
+    <button class="back" id="backMap">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      Days
+    </button>
+    <span class="grow"></span>
+  </div>
+  <div class="day-head">
+    <div class="kicker" style="color:var(--ink-3)">Reference</div>
+    <h2 style="color:var(--ink)">Muscle map</h2>
+    <p>Front and back, with every major muscle labelled. The muscle names on the exercise
+       screens all come from this chart — pinch to zoom in on any part of it.</p>
+  </div>
+  <div class="chart"><img id="chartImg" alt="Labelled diagram of the human muscular system, front and back"></div>
+  <p class="credit" style="margin-top:18px">
+    Chart from OpenStax Anatomy &amp; Physiology, via Wikimedia Commons, CC BY 4.0.
+  </p>
+</section>
+
+</div>
+
+<!-- ══════════ SHEET ══════════ -->
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="sheet-head">
+    <div class="grow">
+      <div class="step" id="sheetStep"></div>
+      <h3 id="sheetTitle"></h3>
+    </div>
+    <button class="icon-btn" id="close" aria-label="Close">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="sheet-body" id="sheetBody"></div>
+</div>
+
+<div class="nav" id="nav">
+  <button id="prevEx" aria-label="Previous exercise">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    Prev
+  </button>
+  <button id="doneSet" class="primary">Log a set</button>
+  <button id="nextEx" aria-label="Next exercise">
+    Next
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+  </button>
+</div>
+
+<div class="timer" id="timer">
+  <div class="grow">
+    <div class="l">Rest</div>
+    <div class="t" id="timerT">0:00</div>
+  </div>
+  <button id="timerAdd" aria-label="Add 30 seconds">+30</button>
+  <button id="timerX" aria-label="Stop rest timer">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+  </button>
+</div>
+
+<script>
+"use strict";
+
+/* Muscle name -> [wger overlay id, which body it sits on].
+   Anything not listed still shows as a chip, just without a highlight. */
+const MUS = {
+  "Chest":       [4,  "f"],
+  "Front delts": [2,  "f"],
+  "Side delts":  [2,  "f"],
+  "Biceps":      [1,  "f"],
+  "Abs":         [6,  "f"],
+  "Obliques":    [14, "f"],
+  "Quads":       [10, "f"],
+  "Triceps":     [5,  "b"],
+  "Traps":       [9,  "b"],
+  "Lats":        [12, "b"],
+  "Mid-back":    [12, "b"],
+  "Glutes":      [8,  "b"],
+  "Hamstrings":  [11, "b"],
+  "Calves":      [7,  "b"]
+};
+
+/* ════════════════════════════════════════════════════════════
+   THE PROGRAM — no two-handed cable machines.
+   video:true means media/<id>.webm exists.
+   ════════════════════════════════════════════════════════════ */
+
+const DAYS = [
+{
+  id:"push", n:"Day 1", name:"Push", c:"--d1",
+  tags:["Chest","Shoulders","Triceps","~60 min"],
+  blurb:"Everything today pushes weight away from you. Press heavy while you're fresh, then finish with the smaller stuff.",
+  warm:"5 minutes of easy cardio, 20 band pull-aparts, 15 shoulder dislocates, then two light ramp-up sets before your first working set of bench.",
+  ex:[
+    { id:"bench-press", video:true, name:"Barbell Bench Press", target:"Chest · Shoulders · Triceps",
+      sets:4, reps:"6–8", rest:180, tempo:"3-0-1",
+      primary:["Chest","Front delts","Triceps"], secondary:["Abs"],
+      cues:["Pull your shoulder blades down and back, and keep them pinned there for the whole set.",
+            "The bar touches your <em>lower chest</em>, not your neck. Elbows around 45°, not flared to 90°.",
+            "Drive your feet into the floor. Hips stay on the bench — no bouncing the bar off your ribs."] },
+    { id:"incline-db-press", video:true, name:"Incline Dumbbell Press", target:"Upper chest · Shoulders",
+      sets:3, reps:"8–10", rest:120, tempo:"3-0-1",
+      primary:["Chest","Front delts"], secondary:["Triceps"],
+      cues:["Set the bench to about 30°. Steeper and it turns into a shoulder press.",
+            "Lower until you feel the stretch across the upper chest, then press up and slightly inward.",
+            "Don't clash the dumbbells at the top — stop just short so the chest keeps the tension."] },
+    { id:"db-shoulder-press", video:true, name:"Seated Dumbbell Shoulder Press", target:"Shoulders · Triceps",
+      sets:3, reps:"8–10", rest:120, tempo:"2-0-1",
+      primary:["Front delts","Side delts"], secondary:["Triceps","Traps"],
+      cues:["Sit tall and brace your abs. Don't let your lower back arch off the pad.",
+            "Start with the dumbbells at ear height, elbows slightly in front of your body.",
+            "Press in a shallow arc so they finish over your head, not behind it."] },
+    { id:"incline-fly", name:"Incline Dumbbell Fly", target:"Chest",
+      sets:3, reps:"12–15", rest:90, tempo:"3-1-1",
+      primary:["Chest"], secondary:["Front delts"],
+      cues:["Dumbbells, not the crossover machine — same job on the chest, nothing to set up.",
+            "Soft bend in the elbows, and hold exactly that angle throughout. It's a fly, not a press.",
+            "Open until you feel the stretch, then squeeze back together like you're hugging a barrel."] },
+    { id:"lateral-raise", name:"Dumbbell Lateral Raise", target:"Side delts",
+      sets:4, reps:"12–15", rest:60, tempo:"2-1-2",
+      primary:["Side delts"], secondary:["Traps"],
+      cues:["Lead with your elbows, not your hands. Little finger a touch higher than the thumb.",
+            "Stop at shoulder height — going higher hands the work over to your traps.",
+            "Light weight, strict form. If you're swinging it, you're training your lower back."] },
+    { id:"close-grip-bench", name:"Close-Grip Bench Press", target:"Triceps · Chest",
+      sets:3, reps:"8–10", rest:120, tempo:"3-0-1",
+      primary:["Triceps"], secondary:["Chest","Front delts"],
+      cues:["Hands about shoulder-width. Narrower than that and your wrists take the punishment.",
+            "Keep the elbows tucked close to your ribs on the way down — that's what shifts it to the triceps.",
+            "Touch low on the chest and press straight up."] },
+    { id:"skullcrusher", name:"EZ-Bar Skullcrusher", target:"Triceps",
+      sets:3, reps:"10–12", rest:90, tempo:"3-0-1",
+      primary:["Triceps"], secondary:[],
+      cues:["Upper arms stay still and roughly vertical. Only the forearms move.",
+            "Lower to your forehead or just behind it for a full stretch — that's where the long head grows.",
+            "The EZ bar's angled grip saves your elbows. Use it over a straight bar."] },
+    { id:"triceps-pushdown", name:"Triceps Pushdown", target:"Triceps",
+      sets:3, reps:"12–15", rest:60, tempo:"2-1-2",
+      primary:["Triceps"], secondary:["Forearms"],
+      cues:["One stack, one bar — nothing to set up, so this one is easy to get right.",
+            "Elbows pinned to your ribs. If they drift forward it turns into a chest press.",
+            "Push to a straight arm, hold the squeeze for a beat, then return under control."] }
+  ]
+},
+{
+  id:"legs", n:"Day 2", name:"Legs", c:"--d2",
+  tags:["Quads","Hamstrings","Glutes","~65 min"],
+  blurb:"The hardest of the three and the one most people skip — which is exactly why it sits in the middle of the week.",
+  warm:"5 minutes on the bike, 20 bodyweight squats, 10 walking lunges per leg, 10 leg swings each direction, then two ramp-up squat sets.",
+  ex:[
+    { id:"squat", video:true, name:"Barbell Back Squat", target:"Quads · Glutes",
+      sets:4, reps:"6–8", rest:180, tempo:"3-0-1",
+      primary:["Quads","Glutes"], secondary:["Hamstrings","Abs","Lower back"],
+      cues:["Bar on your rear delts, not your neck. Grip tight and pull it down into your back.",
+            "Big breath in, brace hard, then break at the hips and knees together.",
+            "Hit at least parallel — hip crease below the top of the knee. <em>Depth beats weight.</em>"] },
+    { id:"romanian-deadlift", name:"Romanian Deadlift", target:"Hamstrings · Glutes",
+      sets:3, reps:"8–10", rest:150, tempo:"3-1-1",
+      primary:["Hamstrings","Glutes"], secondary:["Lower back","Traps","Forearms"],
+      cues:["Push your hips <em>back</em> — don't squat down. Knees stay softly bent the whole way.",
+            "The bar stays in contact with your thighs. Let it drift and your lower back takes over.",
+            "Stop when the hamstrings run out of stretch, usually mid-shin. Don't chase the floor."] },
+    { id:"leg-press", name:"Leg Press", target:"Quads · Glutes",
+      sets:3, reps:"10–12", rest:120, tempo:"3-0-1",
+      primary:["Quads","Glutes"], secondary:["Hamstrings"],
+      cues:["Feet shoulder-width, mid-platform. Higher hits more glute and hamstring, lower more quad.",
+            "Bring the knees toward your shoulders until your hips start to curl off the pad, then stop.",
+            "Never slam the knees straight at the top. Leave a few degrees of bend."] },
+    { id:"lunge", name:"Dumbbell Lunge", target:"Quads · Glutes",
+      sets:3, reps:"10/leg", rest:90, tempo:"2-0-1",
+      primary:["Quads","Glutes"], secondary:["Hamstrings","Abs"],
+      cues:["Step out far enough that the front shin stays close to vertical at the bottom.",
+            "Drop straight down until the back knee nearly touches, then drive through the front heel.",
+            "Torso upright for more quad, leaned slightly forward for more glute."] },
+    { id:"leg-curl", name:"Lying Leg Curl", target:"Hamstrings",
+      sets:4, reps:"12–15", rest:90, tempo:"2-1-3",
+      primary:["Hamstrings"], secondary:["Calves"],
+      cues:["Hips flat on the pad. If they lift off, the weight is too heavy.",
+            "Curl all the way until the hamstrings fully shorten, and pause there for a count.",
+            "The lowering half is where the growth is. Take three full seconds coming back."] },
+    { id:"leg-extension", name:"Leg Extension", target:"Quads",
+      sets:3, reps:"12–15", rest:60, tempo:"2-1-2",
+      primary:["Quads"], secondary:[],
+      cues:["Push your lower back into the pad and hold the handles so your hips stay put.",
+            "Straighten fully and squeeze the quads hard for a second at the top.",
+            "Great finisher — go lighter and chase the burn rather than the number."] },
+    { id:"calf-raise", name:"Standing Calf Raise", target:"Calves",
+      sets:4, reps:"12–15", rest:60, tempo:"2-1-3",
+      primary:["Calves"], secondary:[],
+      cues:["Let the heels drop below the step for a full stretch at the bottom.",
+            "Rise all the way onto the big toe and hold the top for a full second.",
+            "Calves live on time under tension. Slow it right down — no bouncing."] },
+    { id:"hanging-leg-raise", video:true, name:"Hanging Leg Raise", target:"Abs",
+      sets:3, reps:"12–15", rest:60, tempo:"2-1-3",
+      primary:["Abs"], secondary:["Obliques","Forearms"],
+      cues:["Kill the swing first. If you're rocking, the hip flexors are doing all of it.",
+            "Curl your pelvis up toward your ribs at the top — that's the part that trains the abs.",
+            "Lower slowly. Bend the knees if straight legs are too much for now."] }
+  ]
+},
+{
+  id:"pull", n:"Day 3", name:"Pull", c:"--d3",
+  tags:["Back","Rear delts","Biceps","~60 min"],
+  blurb:"Everything today pulls weight toward you. Lead with the elbows and let the arms come along for the ride. The pulldown is the pull-up you can actually load — build it up and the real thing follows.",
+  warm:"5 minutes on the rower, 20 band pull-aparts, 15 scapular hangs or shrugs, then two light pulldown sets.",
+  ex:[
+    { id:"lat-pulldown", name:"Lat Pulldown", target:"Lats · Biceps",
+      sets:4, reps:"8–10", rest:150, tempo:"3-0-1",
+      primary:["Lats","Biceps"], secondary:["Mid-back","Rear delts","Forearms"],
+      cues:["Every gym has this machine, and it trains the exact same pattern as a pull-up — " +
+            "you just pick the weight instead of lifting all of yourself.",
+            "Pull your shoulder blades <em>down</em> before the elbows bend, lean back about 15°, " +
+            "and bring the bar to your upper chest. Never behind your neck.",
+            "Let the lats stretch fully at the top of every rep. Don't rock backwards to move it."] },
+    { id:"barbell-row", video:true, name:"Bent-Over Barbell Row", target:"Mid-back · Lats",
+      sets:4, reps:"8–10", rest:150, tempo:"2-1-2",
+      primary:["Mid-back","Lats"], secondary:["Biceps","Rear delts","Traps","Lower back"],
+      cues:["Hinge to roughly 45°, chest proud, and hold that torso angle. No rising up as you pull.",
+            "Pull into your <em>lower ribs</em>, not your chest.",
+            "Squeeze the shoulder blades together at the top, then lower under control."] },
+    { id:"seated-cable-row", name:"Seated Cable Row", target:"Mid-back · Lats",
+      sets:3, reps:"10–12", rest:90, tempo:"2-1-3",
+      primary:["Mid-back","Lats"], secondary:["Biceps","Rear delts","Traps","Forearms"],
+      cues:["One stack, one handle, sitting down — nothing to set up and nothing to balance.",
+            "Sit tall with a small arch. Don't rock backwards to drag the weight in.",
+            "Let the shoulder blades travel forward on the stretch, then pull them together and " +
+            "bring the handle to your belly button. Pause a second with the elbows behind you."] },
+    { id:"one-arm-row", name:"One-Arm Dumbbell Row", target:"Mid-back · Lats",
+      sets:3, reps:"10–12/arm", rest:90, tempo:"2-1-3",
+      primary:["Mid-back","Lats"], secondary:["Biceps","Rear delts"],
+      cues:["Brace a hand and a knee on the bench, back flat and roughly parallel to the floor.",
+            "Let the dumbbell hang and stretch the lat fully before every rep.",
+            "Pull toward your hip, not your shoulder, with the elbow close to your body."] },
+    { id:"reverse-fly", name:"Dumbbell Reverse Fly", target:"Rear delts",
+      sets:3, reps:"15–20", rest:60, tempo:"2-1-2",
+      primary:["Rear delts"], secondary:["Traps","Mid-back"],
+      cues:["Dumbbells instead of the cable face pull — same muscle, nothing to set up.",
+            "Hinge forward, soft elbows, then raise out to the sides like opening a pair of wings.",
+            "Very light weight. Pause and squeeze at the top of every rep."] },
+    { id:"shrug", name:"Dumbbell Shrug", target:"Traps",
+      sets:3, reps:"12–15", rest:60, tempo:"2-1-2",
+      primary:["Traps"], secondary:["Forearms"],
+      cues:["Straight up and down. Rolling your shoulders does nothing except annoy the joint.",
+            "Hold the top for a full second — that squeeze is the whole exercise.",
+            "Let the weight pull your shoulders all the way down at the bottom."] },
+    { id:"barbell-curl", name:"Barbell Curl", target:"Biceps",
+      sets:3, reps:"8–12", rest:90, tempo:"2-1-3",
+      primary:["Biceps"], secondary:["Forearms"],
+      cues:["Elbows stay at your sides and stay there. No swinging the bar up with your hips.",
+            "Curl until the forearms meet the biceps, squeeze, then lower over three seconds.",
+            "An EZ bar is kinder on the wrists if the straight one bothers you."] },
+    { id:"hammer-curl", name:"Hammer Curl", target:"Biceps · Forearms",
+      sets:3, reps:"12–15", rest:60, tempo:"2-1-2",
+      primary:["Biceps","Forearms"], secondary:[],
+      cues:["Neutral grip — palms facing each other, like holding two hammers.",
+            "This builds the brachialis underneath the biceps, which pushes the peak up.",
+            "Alternate arms or go together, just don't swing at the shoulder."] }
+  ]
+}
+];
+
+/* ════════════════════════════════════════════════════════════
+   STATE
+   ════════════════════════════════════════════════════════════ */
+
+const KEY = "plp.v3";
+let state = (() => {
+  try { return JSON.parse(localStorage.getItem(KEY)) || {sets:{}, wt:{}}; }
+  catch(e){ return {sets:{}, wt:{}}; }
+})();
+const save = () => { try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} };
+const doneSets = id => state.sets[id] || 0;
+const dayProgress = d => {
+  let done = 0, total = 0;
+  d.ex.forEach(e => { total += e.sets; done += Math.min(doneSets(e.id), e.sets); });
+  return total ? done/total : 0;
+};
+
+const $  = s => document.querySelector(s);
+const el = (t,c,h) => { const n = document.createElement(t); if(c) n.className = c; if(h != null) n.innerHTML = h; return n; };
+const fmtRest = s => s >= 120 ? (s % 60 ? (s/60).toFixed(1) : s/60) + " min" : s + " sec";
+
+/* media/ lookups — the packaged single-file build fills MEDIA with data URIs */
+const MEDIA = {}; /* MEDIA-MAP */
+const asset = name => MEDIA[name] || ("media/" + name);
+const thumb = id => asset(id + "-thumb.jpg");
+const anim  = id => asset(id + ".gif");
+
+/* ════════════════════════════════════════════════════════════
+   HOME
+   ════════════════════════════════════════════════════════════ */
+
+function renderHome(){
+  const box = $("#dayCards");
+  box.textContent = "";
+  DAYS.forEach(d => {
+    const p = dayProgress(d), C = 2*Math.PI*23;
+    const b = el("button","day-card");
+    b.style.setProperty("--c", `var(${d.c})`);
+    b.innerHTML =
+      `<div>
+         <div class="day-n">${d.n}</div>
+         <h2>${d.name}</h2>
+         <div class="day-tags">${d.tags.map(t=>`<span>${t}</span>`).join("")}<span>${d.ex.length} exercises</span></div>
+       </div>
+       <div class="ring">
+         <svg width="56" height="56" viewBox="0 0 56 56" aria-hidden="true">
+           <circle cx="28" cy="28" r="23" fill="none" stroke="var(--line)" stroke-width="4.5"/>
+           <circle cx="28" cy="28" r="23" fill="none" stroke="var(${d.c})" stroke-width="4.5"
+             stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-p)}"/>
+         </svg>
+         <i>${Math.round(p*100)}%</i>
+       </div>`;
+    b.addEventListener("click", () => openDay(d));
+    box.appendChild(b);
+  });
+}
+
+/* ════════════════════════════════════════════════════════════
+   DAY
+   ════════════════════════════════════════════════════════════ */
+
+let currentDay = null, currentIdx = 0;
+
+function openDay(d){
+  currentDay = d;
+  const v = $("#dayView");
+  v.style.setProperty("--c", `var(${d.c})`);
+  v.textContent = "";
+
+  v.appendChild(el("div","day-head",
+    `<div class="kicker">${d.n} of 3</div><h2>${d.name}</h2><p>${d.blurb}</p>`));
+  v.appendChild(el("div","warmup", `<h3>Warm-up</h3><p>${d.warm}</p>`));
+
+  const list = el("div","ex-list");
+  d.ex.forEach((e,i) => {
+    const done = doneSets(e.id) >= e.sets;
+    const row = el("button","ex-row" + (done ? " done" : ""));
+    row.innerHTML =
+      `<span class="thumb">
+         <img src="${thumb(e.id)}" alt="" loading="lazy">
+         ${e.video ? `<span class="vtag"><svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8z"/></svg></span>` : ""}
+         <span class="tick">✓</span>
+       </span>
+       <span>
+         <span class="ex-name">${e.name}</span>
+         <span class="ex-tgt">${e.target}</span>
+       </span>
+       <span class="ex-dose">${e.sets} × ${e.reps}<small>${fmtRest(e.rest)}</small></span>`;
+    row.addEventListener("click", () => openEx(i));
+    list.appendChild(row);
+  });
+  v.appendChild(list);
+
+  const acts = el("div","day-actions");
+  const start = el("button","btn btn-solid","Start the session");
+  start.addEventListener("click", () => openEx(0));
+  const reset = el("button","btn","Reset this day");
+  reset.addEventListener("click", () => {
+    d.ex.forEach(e => delete state.sets[e.id]);
+    save(); openDay(d); renderHome();
+  });
+  acts.append(start, reset);
+  v.appendChild(acts);
+
+  show("day");
+}
+
+function show(id){
+  document.querySelectorAll(".view").forEach(v => v.classList.toggle("on", v.id === id));
+  window.scrollTo(0,0);
+}
+
+/* ════════════════════════════════════════════════════════════
+   EXERCISE SHEET
+   ════════════════════════════════════════════════════════════ */
+
+function musPanel(e){
+  const side = s => {
+    const prim = [...new Set(e.primary.filter(m => MUS[m] && MUS[m][1] === s).map(m => MUS[m][0]))];
+    const sec  = [...new Set(e.secondary.filter(m => MUS[m] && MUS[m][1] === s).map(m => MUS[m][0]))]
+                   .filter(id => !prim.includes(id));
+    const base = s === "f" ? "muscular_system_front" : "muscular_system_back";
+    return `<div class="body">
+        <img src="${asset('mus/' + base + '.svg')}" alt="">
+        ${sec.map(id  => `<img class="ov sec" src="${asset('mus/secondary-'+id+'.svg')}" alt="">`).join("")}
+        ${prim.map(id => `<img class="ov" src="${asset('mus/main-'+id+'.svg')}" alt="">`).join("")}
+        <span>${s === "f" ? "Front" : "Back"}</span>
+      </div>`;
+  };
+  const wrap = el("div","mus-wrap");
+  wrap.innerHTML = `<div class="mus">${side("f")}${side("b")}</div>`;
+  const chips = el("div","chips");
+  e.primary.forEach(m => chips.appendChild(el("span","chip",`<span class="sw"></span>${m}`)));
+  e.secondary.forEach(m => chips.appendChild(el("span","chip sec",`<span class="sw"></span>${m}`)));
+  wrap.appendChild(chips);
+  return wrap;
+}
+
+/* The animation is a 3D figure running the rep with the working muscles
+   shaded red. Where a filmed demo also exists, it can be switched to. */
+function renderDemo(demo, cap, e, mode){
+  const useVideo = (mode === "video" && e.video);
+  demo.classList.toggle("vid", useVideo);
+
+  demo.innerHTML = useVideo
+    ? `<span class="badge">${ICON_CAM} Real video</span>
+       <button class="pausebtn" id="pause" aria-label="Pause">${ICON_PAUSE}</button>
+       <video id="vid" autoplay loop muted playsinline preload="auto" src="${asset(e.id + '.webm')}"></video>`
+    : `<span class="badge">${ICON_BODY} Muscles in red</span>
+       <img class="gif" src="${anim(e.id)}" alt="${e.name} — animated demonstration">`;
+
+  if(useVideo){
+    demo.querySelector("#pause").addEventListener("click", togglePlay);
+    demo.querySelector("#vid").addEventListener("error", () => renderDemo(demo, cap, e, "anim"));
+  } else {
+    demo.querySelector("img").addEventListener("error", () => {
+      demo.textContent = "";
+      demo.appendChild(el("div","missing",
+        "Animation not found — check that <b>media/" + e.id + ".gif</b> is there."));
+    });
+  }
+
+  cap.textContent = "";
+  cap.appendChild(el("span", null, useVideo ? "Filmed demonstration" : "The movement"));
+  if(e.video){
+    const seg = el("span","seg");
+    [["anim","Animation"],["video","Video"]].forEach(([m,label]) => {
+      const b = el("button", m === mode ? "on" : null, label);
+      b.addEventListener("click", () => renderDemo(demo, cap, e, m));
+      seg.appendChild(b);
+    });
+    cap.appendChild(seg);
+  } else {
+    cap.appendChild(el("span", null, "Loops"));
+  }
+}
+
+function openEx(i){
+  const d = currentDay;
+  currentIdx = Math.max(0, Math.min(i, d.ex.length - 1));
+  const e = d.ex[currentIdx];
+
+  $("#sheetStep").textContent = `${d.name} · ${currentIdx+1} of ${d.ex.length}`;
+  $("#sheetTitle").textContent = e.name;
+
+  const body = $("#sheetBody");
+  body.style.setProperty("--c", `var(${d.c})`);
+  $("#nav").style.setProperty("--c", `var(${d.c})`);
+  body.textContent = "";
+  body.scrollTop = 0;
+
+  /* ---- the demonstration ---- */
+  const demo = el("div","demo");
+  const cap  = el("div","demo-cap");
+  body.append(demo, cap);
+  renderDemo(demo, cap, e, "anim");
+
+  /* ---- muscles ---- */
+  body.appendChild(el("h4","sec-h","Muscles worked"));
+  body.appendChild(musPanel(e));
+
+  /* ---- dose ---- */
+  body.appendChild(el("dl","dose",
+    `<div><dt>Sets</dt><dd class="c">${e.sets}</dd></div>
+     <div><dt>Reps</dt><dd class="c">${e.reps}</dd></div>
+     <div><dt>Rest</dt><dd>${fmtRest(e.rest)}</dd></div>
+     <div><dt>Tempo</dt><dd>${e.tempo}</dd></div>`));
+
+  /* ---- cues ---- */
+  body.appendChild(el("h4","sec-h","How to do it"));
+  const cues = el("ul","cues");
+  e.cues.forEach((c,k) => cues.appendChild(el("li",null,`<b>0${k+1}</b><span>${c}</span>`)));
+  body.appendChild(cues);
+
+  /* ---- tracker ---- */
+  body.appendChild(el("h4","sec-h","Your sets"));
+  const tr = el("div","tracker");
+  tr.appendChild(el("div","hint","Tap a set when you finish it — the rest timer starts on its own."));
+  const sets = el("div","sets");
+  for(let k = 1; k <= e.sets; k++){
+    const pill = el("button","set-pill" + (doneSets(e.id) >= k ? " on" : ""), "Set " + k);
+    pill.addEventListener("click", () => setSets(e, doneSets(e.id) >= k ? k-1 : k));
+    sets.appendChild(pill);
+  }
+  tr.appendChild(sets);
+  const wt = el("label","wt");
+  wt.innerHTML = `<span>Working weight</span><input type="text" inputmode="decimal" placeholder="kg" value="${state.wt[e.id] || ""}">`;
+  wt.querySelector("input").addEventListener("input", ev => { state.wt[e.id] = ev.target.value; save(); });
+  tr.appendChild(wt);
+  body.appendChild(tr);
+
+  body.appendChild(el("p","credit",
+    "Animation © Gym visual — gymvisual.com. "
+    + (e.video ? "Filmed demo: Wikimedia Commons, CC BY 3.0. " : "")
+    + "Muscle diagram: the wger project. Full credits in media/CREDITS.md."));
+
+  updateNav();
+  $("#scrim").classList.add("on");
+  $("#sheet").classList.add("on");
+  document.body.style.overflow = "hidden";
+}
+
+function setSets(e, n){
+  const before = doneSets(e.id);
+  state.sets[e.id] = Math.max(0, n);
+  save();
+  document.querySelectorAll(".set-pill").forEach((p,k) => p.classList.toggle("on", state.sets[e.id] >= k+1));
+  if(state.sets[e.id] > before) startTimer(e.rest);
+  renderHome();
+  refreshRow(e);
+  updateNav();
+}
+
+function refreshRow(e){
+  const i = currentDay.ex.indexOf(e);
+  const row = document.querySelectorAll(".ex-row")[i];
+  if(row) row.classList.toggle("done", doneSets(e.id) >= e.sets);
+}
+
+function updateNav(){
+  const e = currentDay.ex[currentIdx];
+  const n = doneSets(e.id);
+  $("#prevEx").disabled = currentIdx === 0;
+  $("#nextEx").disabled = currentIdx === currentDay.ex.length - 1;
+  $("#doneSet").textContent = n >= e.sets ? "All sets done" : `Log set ${n+1} of ${e.sets}`;
+  $("#doneSet").disabled = n >= e.sets;
+}
+
+const ICON_CAM  = `<svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8z"/></svg>`;
+const ICON_BODY = `<span style="width:8px;height:8px;border-radius:50%;background:#e0342a;display:inline-block"></span>`;
+const ICON_PAUSE = `<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>`;
+const ICON_PLAY  = `<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8z"/></svg>`;
+
+function togglePlay(){
+  const v = $("#vid");
+  if(!v) return;
+  if(v.paused){ v.play();  $("#pause").innerHTML = ICON_PAUSE; }
+  else        { v.pause(); $("#pause").innerHTML = ICON_PLAY;  }
+}
+
+function closeSheet(){
+  $("#scrim").classList.remove("on");
+  $("#sheet").classList.remove("on");
+  document.body.style.overflow = "";
+  const v = $("#vid"); if(v) v.pause();
+}
+
+/* ════════════════════════════════════════════════════════════
+   REST TIMER
+   ════════════════════════════════════════════════════════════ */
+
+let tInt = null, tLeft = 0;
+function startTimer(sec){
+  tLeft = sec;
+  $("#timer").classList.add("on");
+  paintTimer();
+  clearInterval(tInt);
+  tInt = setInterval(() => { tLeft--; paintTimer(); if(tLeft <= 0){ beep(); stopTimer(); } }, 1000);
+}
+function paintTimer(){
+  const m = Math.floor(Math.max(tLeft,0)/60), s = Math.max(tLeft,0) % 60;
+  $("#timerT").textContent = m + ":" + String(s).padStart(2,"0");
+}
+function stopTimer(){ clearInterval(tInt); tInt = null; $("#timer").classList.remove("on"); }
+
+function beep(){
+  try{
+    const AC = window.AudioContext || window.webkitAudioContext;
+    const ac = new AC();
+    [0,.22,.44].forEach((d,i) => {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.type = "sine";
+      o.frequency.value = i === 2 ? 1046 : 784;
+      g.gain.setValueAtTime(0, ac.currentTime + d);
+      g.gain.linearRampToValueAtTime(.3, ac.currentTime + d + .02);
+      g.gain.exponentialRampToValueAtTime(.001, ac.currentTime + d + .2);
+      o.connect(g); g.connect(ac.destination);
+      o.start(ac.currentTime + d); o.stop(ac.currentTime + d + .22);
+    });
+    if(navigator.vibrate) navigator.vibrate([180,90,180]);
+    setTimeout(() => ac.close(), 1400);
+  }catch(err){}
+}
+
+/* ════════════════════════════════════════════════════════════
+   WIRING
+   ════════════════════════════════════════════════════════════ */
+
+$("#back").addEventListener("click", () => { show("home"); renderHome(); });
+$("#backMap").addEventListener("click", () => show("home"));
+$("#backAdvice").addEventListener("click", () => show("home"));
+$("#adviceLink").addEventListener("click", () => {
+  const v = $("#goalVid");
+  if(v && !v.getAttribute("src")) v.src = asset("pull-up.webm");
+  buildCoverage();
+  show("advice");
+});
+
+/* Weekly set count per muscle, read off the program so it always matches. */
+function buildCoverage(){
+  const t = $("#coverTable");
+  if(!t || t.dataset.done) return;
+  const order = ["Chest","Front delts","Side delts","Rear delts","Triceps","Biceps",
+                 "Forearms","Traps","Lats","Mid-back","Lower back","Abs","Obliques",
+                 "Glutes","Quads","Hamstrings","Calves"];
+  const direct = {}, assist = {};
+  DAYS.flatMap(d => d.ex).forEach(e => {
+    e.primary.forEach(m => direct[m] = (direct[m] || 0) + e.sets);
+    e.secondary.forEach(m => assist[m] = (assist[m] || 0) + e.sets);
+  });
+  let html = "<tr><th>Muscle</th><th>Direct</th><th>Assisting</th></tr>";
+  order.forEach(m => {
+    const d = direct[m] || 0, a = assist[m] || 0;
+    html += `<tr><td>${m}</td><td>${d ? d + " sets" : "\u2014"}</td><td>${a ? a + " sets" : "\u2014"}</td></tr>`;
+  });
+  t.innerHTML = html;
+  t.dataset.done = "1";
+}
+$("#mapLink").addEventListener("click", () => {
+  const c = $("#chartImg");
+  if(!c.getAttribute("src")) c.src = asset("muscle-map.webp");
+  show("map");
+});
+$("#close").addEventListener("click", closeSheet);
+$("#scrim").addEventListener("click", closeSheet);
+$("#prevEx").addEventListener("click", () => openEx(currentIdx - 1));
+$("#nextEx").addEventListener("click", () => openEx(currentIdx + 1));
+$("#doneSet").addEventListener("click", () => {
+  const e = currentDay.ex[currentIdx];
+  setSets(e, doneSets(e.id) + 1);
+});
+$("#timerX").addEventListener("click", stopTimer);
+$("#timerAdd").addEventListener("click", () => { tLeft += 30; paintTimer(); });
+$("#theme").addEventListener("click", () => {
+  const r = document.documentElement;
+  const sysDark = matchMedia("(prefers-color-scheme:dark)").matches;
+  const cur = r.getAttribute("data-theme") || (sysDark ? "dark" : "light");
+  r.setAttribute("data-theme", cur === "dark" ? "light" : "dark");
+});
+document.addEventListener("keydown", ev => {
+  if(ev.key === "Escape"){ $("#sheet").classList.contains("on") ? closeSheet() : show("home"); }
+  if($("#sheet").classList.contains("on")){
+    if(ev.key === "ArrowRight") openEx(currentIdx + 1);
+    if(ev.key === "ArrowLeft")  openEx(currentIdx - 1);
+  }
+});
+
+let sx = 0, sy = 0;
+$("#sheet").addEventListener("touchstart", e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, {passive:true});
+$("#sheet").addEventListener("touchend", e => {
+  const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+  if(Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 2) openEx(currentIdx + (dx < 0 ? 1 : -1));
+}, {passive:true});
+
+renderHome();
+</script>
+</body>
+</html>
