@@ -3,7 +3,7 @@
 A 3-day training app. Open it, pick Day 1, 2 or 3, and work through the
 exercises. Every exercise shows a **3D animation of the movement with the
 working muscles shaded red**, a front-and-back body diagram, sets, reps, rest,
-tempo and form cues. Seven exercises also have a short filmed demo you can
+tempo and form cues. Five exercises also have a short filmed demo you can
 switch to.
 
 It runs entirely offline. Nothing is fetched from the internet at any point.
@@ -12,7 +12,7 @@ It runs entirely offline. Nothing is fetched from the internet at any point.
 
 ## Put it on your phone
 
-**`PLP.html` is the whole app in one file** (4.6 MB) — every animation, diagram
+**`PLP.html` is the whole app in one file** (4.5 MB) — every animation, diagram
 and image is built into it, so there is no folder to keep together and no path
 can break.
 
@@ -23,9 +23,9 @@ can break.
    - Android / Chrome: ⋮ menu → *Add to Home screen*
    - iPhone / Safari: Share → *Add to Home Screen*
 
-If you also want the seven filmed demos on your phone, copy the whole `APP`
-folder instead and open `index.html`. Without them the app still works — those
-exercises just show the animation.
+If you also want the filmed demos on your phone, copy the whole folder instead
+and open `index.html`. Without them the app still works — those exercises just
+show the animation.
 
 On a computer, double-click either file.
 
@@ -45,18 +45,35 @@ gym has no pull-up bar at all.
 
 ---
 
-## No two-handed cable machines
+## Machines and cables where they win
 
-You said the two-sided cable setups are awkward for you, so none are in the
-program:
+The program uses the machine or the cable whenever it does the job better than
+the free-weight version, and free weights everywhere else:
 
-- The chest fly is an **incline dumbbell fly**, not a cable crossover.
-- The rear-delt work is a **dumbbell reverse fly**, not a cable face pull.
+- The chest fly is a **machine fly (pec deck)** — the weight rides on a track,
+  so nothing has to be balanced and all of the effort goes into the chest.
+- All three triceps movements are on the cable: an **overhead cable extension**
+  for the long head in its stretched position, a **two-hand pushdown** as the
+  heavy one, and a **single-arm pushdown** as the finisher, so neither arm can
+  cover for the other.
+- The ab work is the **captain's chair leg raise** — same movement as a hanging
+  leg raise, but your grip no longer decides when the set ends.
+- The unilateral row is a **machine row** with your chest on a pad. Most of them
+  let you work one arm at a time or both together.
+- The barbell curl is an **EZ-bar curl, wide then narrow**: sets 1–2 wide for
+  the short head, sets 3–4 narrow for the long head.
 
-The two cable movements that remain are both single-stack, single-bar and need
-no setup: the **triceps pushdown** and the **lat pulldown**. If you would rather
-drop those too, swap the pushdown for more skullcrushers and the pulldown for
-another set of one-arm rows.
+Every one of those has its own animation, pulled from the same Gym visual
+dataset as the rest — the machine you will actually stand in front of, not a
+free-weight stand-in.
+
+### No direct rear-delt work
+
+The dumbbell reverse fly is gone. Rear delts still take a share of all four
+pulls on Day 3 plus the band pull-aparts in that day's warm-up — 14 assisting
+sets a week. If your shoulders sit rolled forward and you want direct work
+anyway, the advice page lists it as an optional add-on (reverse pec deck or face
+pulls, 3 × 15–20 at the end of Day 3).
 
 ---
 
@@ -65,19 +82,19 @@ another set of one-arm rows.
 | | Day 1 | Day 2 | Day 3 |
 |---|---|---|---|
 | | **Push** | **Legs** | **Pull** |
-| Trains | Chest, shoulders, triceps | Quads, hamstrings, glutes, calves | Back, rear delts, biceps |
-| Exercises | 8 | 8 | 8 |
+| Trains | Chest, shoulders, triceps | Quads, hamstrings, glutes, calves | Back, traps, biceps |
+| Exercises | 8 | 8 | 7 |
+| Working sets | 26 | 27 | 24 |
 
 **Day 1 — Push.** Bench press · incline dumbbell press · seated dumbbell
-shoulder press · incline dumbbell fly · lateral raise · close-grip bench ·
-EZ-bar skullcrusher · triceps pushdown
+shoulder press · machine chest fly · lateral raise · overhead cable extension ·
+triceps pushdown · single-arm cable pushdown
 
 **Day 2 — Legs.** Back squat · Romanian deadlift · leg press · dumbbell lunge ·
-lying leg curl · leg extension · standing calf raise · hanging leg raise
+lying leg curl · leg extension · standing calf raise · captain's chair leg raise
 
 **Day 3 — Pull.** Lat pulldown · bent-over barbell row · seated cable row ·
-one-arm dumbbell row · dumbbell reverse fly · dumbbell shrug · barbell curl ·
-hammer curl
+machine row · dumbbell shrug · EZ-bar curl (wide, then narrow) · hammer curl
 
 Train on three non-consecutive days — Monday / Wednesday / Friday, or
 Tuesday / Thursday / Saturday. Never all three back to back.
@@ -93,12 +110,13 @@ and start again at the bottom of the range.
 - **Three day buttons** on the home screen, each with a progress ring.
 - **Animated demo** for every exercise — a 3D figure running the rep with the
   muscles it works shaded red, looping.
-- **Animation / Video toggle** on the seven exercises that have a filmed demo.
+- **Animation / Video toggle** on the five exercises that have a filmed demo.
 - **Muscle diagram** under each exercise: front and back body, primary muscles
   in solid red, secondary in a lighter shade, all named underneath.
 - **Muscle map** on the home screen — the full labelled muscular system.
 - **Advice page** — ten things that actually matter, in order, including a plan
-  for getting your first pull-up and a live table of weekly sets per muscle.
+  for getting your first pull-up and a live table of weekly sets per muscle,
+  counted straight off the program.
 - **Set tracker.** Tap a set as you finish it; saved on the device.
 - **Rest timer** starts by itself when you log a set, and beeps and vibrates
   when the rest is up. `+30` adds half a minute.
@@ -114,7 +132,12 @@ and start again at the bottom of the range.
 | `PLP.html` | the app, self-contained — **put this on your phone** |
 | `index.html` | the same app, loading from `media/` (adds the filmed demos) |
 | `media/` | animations, thumbnails, videos, muscle diagrams, `CREDITS.md` |
+| `build.py` | regenerates `PLP.html` from `index.html` + `media/` |
+| `CLAUDE.md` | how the app is built, for editing it later |
 | `README.md` | this file |
+
+`index.html` is the source. `PLP.html` is generated from it by `python build.py`,
+which inlines only the assets the program actually references.
 
 ---
 

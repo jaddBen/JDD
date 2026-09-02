@@ -11,8 +11,8 @@ This app is for one person's private training use. Keep these credits with it.
 The 3D animated demonstrations (the figure performing the rep with the working
 muscles shaded red) are the property of **Gym visual**. They were obtained from
 the [`hasaneyldrm/exercises-dataset`](https://github.com/hasaneyldrm/exercises-dataset)
-repository, which redistributes them with the rights holder's written permission
-under two conditions, both of which are respected here:
+repository, pinned at commit `7455efae`, which redistributes them with the rights
+holder's written permission under two conditions, both of which are respected here:
 
 - **180 × 180 resolution only** — the files in `media/` are the original
   180 × 180 and have not been upscaled.
@@ -27,12 +27,27 @@ https://gymvisual.com/content/3-terms-and-conditions-of-use
 Still thumbnails (`<exercise>-thumb.jpg`) come from the same source and are
 covered by the same terms.
 
+Six animations were taken from that dataset later than the rest, when the program
+moved those exercises onto machines and cables. They are listed here with the
+dataset id they came from, so any of them can be traced back:
+
+| file in `media/` | dataset id | name in the dataset |
+|---|---|---|
+| `machine-fly.gif` | `0596` | lever seated fly |
+| `cable-overhead-ext.gif` | `0194` | cable overhead triceps extension (rope attachment) |
+| `cable-pushdown-1arm.gif` | `1723` | cable one arm tricep pushdown |
+| `captains-chair.gif` | `2963` | captains chair straight leg raise |
+| `machine-row.gif` | `0571` | lever alternating narrow grip seated row |
+| `ez-bar-curl.gif` | `0447` | ez barbell curl |
+
+Each is the original 180 × 180, byte-for-byte as published.
+
 ---
 
 ## Filmed demonstrations — `<exercise>.webm`
 
-Seven exercises also have a short filmed demo, from **Wikimedia Commons**,
-licensed **CC BY 3.0**.
+Five exercises have a short filmed demo, from **Wikimedia Commons**, licensed
+**CC BY 3.0**. A sixth clip, `pull-up.webm`, plays on the advice page.
 
 | file | source |
 |---|---|
@@ -40,9 +55,11 @@ licensed **CC BY 3.0**.
 | `incline-db-press.webm` | [Incline press – exercise demonstration video](https://commons.wikimedia.org/wiki/File:Incline_press_-_exercise_demonstration_video.webm) |
 | `db-shoulder-press.webm` | [Shoulder press – exercise demonstration video](https://commons.wikimedia.org/wiki/File:Shoulder_press_-_exercise_demonstration_video.webm) |
 | `squat.webm` | [Squat – exercise demonstration video](https://commons.wikimedia.org/wiki/File:Squat_-_exercise_demonstration_video.webm) |
-| `hanging-leg-raise.webm` | [Leg raises – exercise demonstration video](https://commons.wikimedia.org/wiki/File:Leg_raises_-_exercise_demonstration_video.webm) |
 | `pull-up.webm` | [Pull-ups – exercise demonstration video](https://commons.wikimedia.org/wiki/File:Pull-ups_-_exercise_demonstration_video.webm) |
 | `barbell-row.webm` | [Bent-over row – exercise demonstration video](https://commons.wikimedia.org/wiki/File:Bent-over_row_-_exercise_demonstration_video.webm) |
+
+`hanging-leg-raise.webm` is still in `media/` but no longer used: the ab exercise
+is now the captain's chair, and that clip shows a hanging leg raise on a bar.
 
 ---
 

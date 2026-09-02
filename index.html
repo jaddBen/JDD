@@ -328,7 +328,7 @@ img,video{max-width:100%;display:block}
     <h1>PLP<em>3-day split</em></h1>
     <p class="sub">Three sessions a week, one rest day between each. Every exercise shows the
       movement as a <b>3D animation with the working muscles shaded red</b>, plus a body
-      diagram, sets, reps and form cues. Seven of them also have a filmed demo you can switch to.</p>
+      diagram, sets, reps and form cues. Five of them also have a filmed demo you can switch to.</p>
     <div class="creed"><span class="dot"></span> Natural training — no steroids</div>
   </header>
 
@@ -359,8 +359,9 @@ img,video{max-width:100%;display:block}
   <p class="foot">
     Built on the PLP split from the reel by <b>@bigg_bosse_casa</b> — the reel names the split and
     nothing more, so the exercises, sets and reps here are a standard hypertrophy build-out of it.
-    <b>No two-handed cable machines</b>: the chest fly and the rear-delt work are done with
-    dumbbells instead.<br><br>
+    <b>Machines and cables where they win</b>: the chest fly, the ab work, the unilateral row and
+    all three triceps movements. Every exercise shows its own animation &mdash; the machine you
+    will actually stand in front of, not a stand-in.<br><br>
     Runs fully offline. Exercise animations <b>© Gym visual</b> — gymvisual.com — used here for
     personal training only. Filmed demos from Wikimedia Commons (CC BY 3.0), muscle diagrams from
     the <b>wger</b> project, muscle chart by <b>OpenStax</b> (CC BY 4.0). Full list in
@@ -555,15 +556,19 @@ img,video{max-width:100%;display:block}
            target, <em>assisting</em> is sets where it helps. Roughly 10&ndash;20 direct sets a week
            is the useful range for a muscle you want to grow.</p>
         <div class="tbl-wrap"><table class="tbl" id="coverTable"></table></div>
-        <p>Two things are deliberately stabiliser-only. Your <em>lower back</em> works hard holding
+        <p>Three things are deliberately assistance-only. Your <em>lower back</em> works hard holding
            position on squats, Romanian deadlifts and rows &mdash; that is plenty, and adding direct
            work on top usually just costs you recovery. <em>Obliques</em> get the same treatment from
-           lunges and the leg raise.</p>
+           lunges and the leg raise. <em>Rear delts</em> take a share of all four pulls on Day&nbsp;3
+           plus the band pull-aparts in that day's warm-up, which is why there is no separate
+           rear-delt exercise.</p>
         <p>If you want them anyway, add either of these at the end of a day &mdash; they are optional,
            not missing:</p>
         <ul>
           <li><em>Back extensions</em> &mdash; 2&times;12&ndash;15, end of Day&nbsp;2.</li>
           <li><em>Side plank</em> &mdash; 2&times;30&nbsp;s each side, end of Day&nbsp;2.</li>
+          <li><em>Rear delts</em> &mdash; reverse pec deck or face pulls, 3&times;15&ndash;20, end of
+              Day&nbsp;3. Worth adding if your shoulders sit rolled forward.</li>
           <li><em>Calves</em> are on the low side at 4 sets. If yours are stubborn, add a second
               calf exercise to Day&nbsp;2 for 3 more.</li>
         </ul>
@@ -661,8 +666,9 @@ const MUS = {
 };
 
 /* ════════════════════════════════════════════════════════════
-   THE PROGRAM — no two-handed cable machines.
-   video:true means media/<id>.webm exists.
+   THE PROGRAM — machines and cables where they beat the free-weight version.
+   Every exercise has media/<id>.gif and media/<id>-thumb.jpg.
+   video:true additionally means media/<id>.webm exists.
    ════════════════════════════════════════════════════════════ */
 
 const DAYS = [
@@ -690,36 +696,36 @@ const DAYS = [
       cues:["Sit tall and brace your abs. Don't let your lower back arch off the pad.",
             "Start with the dumbbells at ear height, elbows slightly in front of your body.",
             "Press in a shallow arc so they finish over your head, not behind it."] },
-    { id:"incline-fly", name:"Incline Dumbbell Fly", target:"Chest",
+    { id:"machine-fly", name:"Machine Chest Fly", target:"Chest",
       sets:3, reps:"12–15", rest:90, tempo:"3-1-1",
       primary:["Chest"], secondary:["Front delts"],
-      cues:["Dumbbells, not the crossover machine — same job on the chest, nothing to set up.",
-            "Soft bend in the elbows, and hold exactly that angle throughout. It's a fly, not a press.",
-            "Open until you feel the stretch, then squeeze back together like you're hugging a barrel."] },
+      cues:["Set the seat so the handles sit at <em>mid-chest</em> height, not up by your shoulders.",
+            "Back flat on the pad, soft bend in the elbows, and hold exactly that angle throughout. It's a fly, not a press.",
+            "Bring the handles together until they almost touch and squeeze for a beat, then open until you feel the stretch. The machine holds the weight, so take the negative slower than you could with dumbbells."] },
     { id:"lateral-raise", name:"Dumbbell Lateral Raise", target:"Side delts",
       sets:4, reps:"12–15", rest:60, tempo:"2-1-2",
       primary:["Side delts"], secondary:["Traps"],
       cues:["Lead with your elbows, not your hands. Little finger a touch higher than the thumb.",
             "Stop at shoulder height — going higher hands the work over to your traps.",
             "Light weight, strict form. If you're swinging it, you're training your lower back."] },
-    { id:"close-grip-bench", name:"Close-Grip Bench Press", target:"Triceps · Chest",
-      sets:3, reps:"8–10", rest:120, tempo:"3-0-1",
-      primary:["Triceps"], secondary:["Chest","Front delts"],
-      cues:["Hands about shoulder-width. Narrower than that and your wrists take the punishment.",
-            "Keep the elbows tucked close to your ribs on the way down — that's what shifts it to the triceps.",
-            "Touch low on the chest and press straight up."] },
-    { id:"skullcrusher", name:"EZ-Bar Skullcrusher", target:"Triceps",
+    { id:"cable-overhead-ext", name:"Overhead Cable Extension", target:"Triceps",
       sets:3, reps:"10–12", rest:90, tempo:"3-0-1",
-      primary:["Triceps"], secondary:[],
-      cues:["Upper arms stay still and roughly vertical. Only the forearms move.",
-            "Lower to your forehead or just behind it for a full stretch — that's where the long head grows.",
-            "The EZ bar's angled grip saves your elbows. Use it over a straight bar."] },
+      primary:["Triceps"], secondary:["Abs"],
+      cues:["Rope on the <em>low</em> pulley. Turn your back to the machine, bring the rope up behind your head, one foot forward for balance.",
+            "Upper arms stay beside your ears and do not move. Only the forearms open and close.",
+            "Let the elbows bend all the way behind your head on every rep. That deep stretch is the one thing the two pushdowns below cannot give you, and it is where the long head grows."] },
     { id:"triceps-pushdown", name:"Triceps Pushdown", target:"Triceps",
-      sets:3, reps:"12–15", rest:60, tempo:"2-1-2",
+      sets:3, reps:"10–12", rest:90, tempo:"2-1-2",
       primary:["Triceps"], secondary:["Forearms"],
-      cues:["One stack, one bar — nothing to set up, so this one is easy to get right.",
+      cues:["Two hands on the bar — this is the heavy one of the three, so pick a weight you have to work for.",
             "Elbows pinned to your ribs. If they drift forward it turns into a chest press.",
-            "Push to a straight arm, hold the squeeze for a beat, then return under control."] }
+            "Push to a straight arm, hold the squeeze for a beat, then return under control."] },
+    { id:"cable-pushdown-1arm", name:"Single-Arm Cable Pushdown", target:"Triceps",
+      sets:3, reps:"12–15/arm", rest:60, tempo:"2-1-2",
+      primary:["Triceps"], secondary:["Forearms"],
+      cues:["Single handle on the high pulley. Stand side-on to the stack, neutral or underhand grip — whichever the elbow prefers.",
+            "Elbow pinned to your ribs and the shoulder still. If the shoulder starts helping, the weight is too heavy.",
+            "Push to a fully straight arm and hold the squeeze. Same reps both sides — start with the weaker arm and let it set the number."] }
   ]
 },
 {
@@ -770,17 +776,17 @@ const DAYS = [
       cues:["Let the heels drop below the step for a full stretch at the bottom.",
             "Rise all the way onto the big toe and hold the top for a full second.",
             "Calves live on time under tension. Slow it right down — no bouncing."] },
-    { id:"hanging-leg-raise", video:true, name:"Hanging Leg Raise", target:"Abs",
+    { id:"captains-chair", name:"Captain's Chair Leg Raise", target:"Abs",
       sets:3, reps:"12–15", rest:60, tempo:"2-1-3",
-      primary:["Abs"], secondary:["Obliques","Forearms"],
-      cues:["Kill the swing first. If you're rocking, the hip flexors are doing all of it.",
-            "Curl your pelvis up toward your ribs at the top — that's the part that trains the abs.",
-            "Lower slowly. Bend the knees if straight legs are too much for now."] }
+      primary:["Abs"], secondary:["Obliques"],
+      cues:["Forearms on the pads, back flat against the rest, and push down through the elbows so you aren't sagging into your shoulders.",
+            "Kill the swing first. If you're rocking, the hip flexors are doing all of it.",
+            "Curl your pelvis up toward your ribs at the top — that's the part that trains the abs. Lower slowly, and bend the knees if straight legs are too much for now."] }
   ]
 },
 {
   id:"pull", n:"Day 3", name:"Pull", c:"--d3",
-  tags:["Back","Rear delts","Biceps","~60 min"],
+  tags:["Back","Traps","Biceps","~55 min"],
   blurb:"Everything today pulls weight toward you. Lead with the elbows and let the arms come along for the ride. The pulldown is the pull-up you can actually load — build it up and the real thing follows.",
   warm:"5 minutes on the rower, 20 band pull-aparts, 15 scapular hangs or shrugs, then two light pulldown sets.",
   ex:[
@@ -805,30 +811,24 @@ const DAYS = [
             "Sit tall with a small arch. Don't rock backwards to drag the weight in.",
             "Let the shoulder blades travel forward on the stretch, then pull them together and " +
             "bring the handle to your belly button. Pause a second with the elbows behind you."] },
-    { id:"one-arm-row", name:"One-Arm Dumbbell Row", target:"Mid-back · Lats",
-      sets:3, reps:"10–12/arm", rest:90, tempo:"2-1-3",
-      primary:["Mid-back","Lats"], secondary:["Biceps","Rear delts"],
-      cues:["Brace a hand and a knee on the bench, back flat and roughly parallel to the floor.",
-            "Let the dumbbell hang and stretch the lat fully before every rep.",
-            "Pull toward your hip, not your shoulder, with the elbow close to your body."] },
-    { id:"reverse-fly", name:"Dumbbell Reverse Fly", target:"Rear delts",
-      sets:3, reps:"15–20", rest:60, tempo:"2-1-2",
-      primary:["Rear delts"], secondary:["Traps","Mid-back"],
-      cues:["Dumbbells instead of the cable face pull — same muscle, nothing to set up.",
-            "Hinge forward, soft elbows, then raise out to the sides like opening a pair of wings.",
-            "Very light weight. Pause and squeeze at the top of every rep."] },
+    { id:"machine-row", name:"Machine Row", target:"Mid-back · Lats",
+      sets:3, reps:"10–12", rest:90, tempo:"2-1-3",
+      primary:["Mid-back","Lats"], secondary:["Biceps","Rear delts","Traps"],
+      cues:["Set the seat so the handles line up with your <em>lower ribs</em>, chest firm against the pad for the whole set.",
+            "Lead with the elbows, pull them past your ribs, and squeeze the shoulder blades together for a beat before you let it back out.",
+            "One arm at a time gives you a longer stretch and an honest comparison between sides — same reps each arm, weaker side first."] },
     { id:"shrug", name:"Dumbbell Shrug", target:"Traps",
       sets:3, reps:"12–15", rest:60, tempo:"2-1-2",
       primary:["Traps"], secondary:["Forearms"],
       cues:["Straight up and down. Rolling your shoulders does nothing except annoy the joint.",
             "Hold the top for a full second — that squeeze is the whole exercise.",
             "Let the weight pull your shoulders all the way down at the bottom."] },
-    { id:"barbell-curl", name:"Barbell Curl", target:"Biceps",
-      sets:3, reps:"8–12", rest:90, tempo:"2-1-3",
+    { id:"ez-bar-curl", name:"EZ-Bar Curl — Wide, then Narrow", target:"Biceps",
+      sets:4, reps:"8–12", rest:90, tempo:"2-1-3",
       primary:["Biceps"], secondary:["Forearms"],
-      cues:["Elbows stay at your sides and stay there. No swinging the bar up with your hips.",
-            "Curl until the forearms meet the biceps, squeeze, then lower over three seconds.",
-            "An EZ bar is kinder on the wrists if the straight one bothers you."] },
+      cues:["<em>Sets 1 and 2 — wide grip.</em> Hands out on the outer bend, palms turned away from each other. That loads the <em>short head</em>, the inner half of the biceps.",
+            "<em>Sets 3 and 4 — narrow grip.</em> Hands in on the inner bend, close together. That shifts it onto the <em>long head</em>, the outer half that builds the peak.",
+            "Both grips, same rules: elbows at your sides and staying there, no swinging the bar up with the hips, three full seconds lowering."] },
     { id:"hammer-curl", name:"Hammer Curl", target:"Biceps · Forearms",
       sets:3, reps:"12–15", rest:60, tempo:"2-1-2",
       primary:["Biceps","Forearms"], secondary:[],
