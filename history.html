@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>FitTrack — History</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💪</text></svg>"/>
+  <link rel="stylesheet" href="css/app.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<nav class="top-nav">
+  <a href="index.html" class="nav-brand">💪 FitTrack</a>
+  <a href="index.html"        class="nav-link"><span class="icon">🏠</span><span class="label">Home</span></a>
+  <a href="workouts.html"     class="nav-link"><span class="icon">🏋️</span><span class="label">Workout</span></a>
+  <a href="nutrition.html"    class="nav-link"><span class="icon">🥗</span><span class="label">Nutrition</span></a>
+  <a href="history.html"      class="nav-link active"><span class="icon">📈</span><span class="label">History</span></a>
+  <a href="apple-health.html" class="nav-link"><span class="icon">🍎</span><span class="label">Health</span></a>
+  <a href="profile.html"      class="nav-link"><span class="icon">👤</span><span class="label">Profile</span></a>
+</nav>
+
+<main>
+  <h1>📈 History & Analytics</h1>
+  <p class="subtitle">Your fitness trends over time</p>
+
+  <!-- Range selector -->
+  <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
+    <div class="chip-group" id="range-chips">
+      <button class="chip selected" data-days="7">7 Days</button>
+      <button class="chip" data-days="14">14 Days</button>
+      <button class="chip" data-days="30">30 Days</button>
+      <button class="chip" data-days="90">3 Months</button>
+    </div>
+  </div>
+
+  <!-- Summary Stats -->
+  <div class="grid-4" style="margin-bottom:16px">
+    <div class="stat-tile">
+      <div class="stat-label">🏋️ Workouts</div>
+      <div class="stat-value" id="hs-workouts">0</div>
+      <div class="stat-sub">in period</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-label">⚡ Total Burned</div>
+      <div class="stat-value" id="hs-burned">0</div>
+      <div class="stat-sub">kcal</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-label">🥗 Avg Daily</div>
+      <div class="stat-value" id="hs-avg-cal">0</div>
+      <div class="stat-sub">kcal consumed</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-label">🏃 Distance</div>
+      <div class="stat-value" id="hs-distance">0</div>
+      <div class="stat-sub">km total</div>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">Calorie Balance (Consumed vs Burned)</div>
+    <div class="chart-container">
+      <canvas id="chart-calories"></canvas>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:16px">
+    <div class="card">
+      <div class="card-title">Workout Minutes per Day</div>
+      <div class="chart-container">
+        <canvas id="chart-minutes"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Weight Trend</div>
+      <div class="chart-container">
+        <canvas id="chart-weight"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">Activity Breakdown</div>
+    <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+      <div style="width:200px;height:200px;position:relative">
+        <canvas id="chart-activities"></canvas>
+      </div>
+      <div id="activity-legend" style="flex:1;min-width:140px;display:flex;flex-direction:column;gap:8px;font-size:.85rem"></div>
+    </div>
+  </div>
+
+  <!-- Workout log table -->
+  <div class="card">
+    <div class="card-title">Workout Log</div>
+    <div id="all-workouts-list" class="log-list" style="max-height:400px;overflow-y:auto"></div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/storage.js"></script>
+<script src="js/calories.js"></script>
+<script src="js/app.js"></script>
+<script>
+(function() {
+  let days = 7;
+  let calChart, minChart, wtChart, actChart;
+
+  document.querySelectorAll('#range-chips .chip').forEach(c => {
+    c.addEventListener('click', () => {
+      document.querySelectorAll('#range-chips .chip').forEach(x => x.classList.remove('selected'));
+      c.classList.add('selected');
+      days = parseInt(c.dataset.days);
+      render();
+    });
+  });
+
+  function getDatesInRange(d) {
+    const dates = [];
+    for (let i = d - 1; i >= 0; i--) {
+      const dt = new Date();
+      dt.setDate(dt.getDate() - i);
+      dates.push(dt.toISOString().slice(0, 10));
+    }
+    return dates;
+  }
+
+  function render() {
+    const dates = getDatesInRange(days);
+    const workouts = Storage.getArray('workouts');
+    const nutrition = Storage.getArray('nutrition');
+    const weightLog = Storage.getArray('weight_log');
+    const tdee = App.getTodayTDEE();
+
+    // Filter to range
+    const ws = workouts.filter(w => dates.includes(w.date));
+    const ns = nutrition.filter(n => dates.includes(n.date));
+
+    // Summary
+    const totalBurned = ws.reduce((s, w) => s + (w.caloriesBurned || 0), 0);
+    const totalDist   = ws.reduce((s, w) => s + (w.distanceKm || 0), 0);
+    const daysWithFood = [...new Set(ns.map(n => n.date))].length || 1;
+    const totalConsumed = ns.reduce((s, n) => s + (n.calories || 0), 0);
+    document.getElementById('hs-workouts').textContent  = ws.length;
+    document.getElementById('hs-burned').textContent    = totalBurned.toLocaleString();
+    document.getElementById('hs-avg-cal').textContent   = Math.round(totalConsumed / daysWithFood).toLocaleString();
+    document.getElementById('hs-distance').textContent  = totalDist.toFixed(1);
+
+    // Build daily data
+    const labels    = dates.map(d => { const dt = new Date(d + 'T00:00:00'); return dt.toLocaleDateString(undefined, { month:'short', day:'numeric' }); });
+    const consumed  = dates.map(d => ns.filter(n => n.date === d).reduce((s, n) => s + (n.calories || 0), 0));
+    const burned    = dates.map(d => ws.filter(w => w.date === d).reduce((s, w) => s + (w.caloriesBurned || 0), 0));
+    const minutes   = dates.map(d => ws.filter(w => w.date === d).reduce((s, w) => s + (w.duration || 0), 0));
+
+    // Calorie chart
+    if (calChart) calChart.destroy();
+    calChart = new Chart(document.getElementById('chart-calories'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Consumed', data: consumed, backgroundColor: 'rgba(99,102,241,.7)', borderRadius: 6 },
+          { label: 'Burned',   data: burned,   backgroundColor: 'rgba(16,185,129,.7)', borderRadius: 6 },
+          { label: 'TDEE',     data: dates.map(() => tdee), type: 'line', borderColor: '#f59e0b', borderDash: [4,4], pointRadius: 0, fill: false, borderWidth: 2 },
+        ]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true } } }
+    });
+
+    // Minutes chart
+    if (minChart) minChart.destroy();
+    minChart = new Chart(document.getElementById('chart-minutes'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{ label: 'Exercise (min)', data: minutes, backgroundColor: 'rgba(99,102,241,.8)', borderRadius: 6 }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+
+    // Weight chart
+    const wlInRange = weightLog.filter(w => dates.includes(w.date)).sort((a, b) => a.date.localeCompare(b.date));
+    if (wtChart) wtChart.destroy();
+    wtChart = new Chart(document.getElementById('chart-weight'), {
+      type: 'line',
+      data: {
+        labels: wlInRange.map(w => App.formatDate(w.date)),
+        datasets: [{ label: 'Weight', data: wlInRange.map(w => w.weight),
+          borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,.1)', fill: true,
+          tension: 0.3, pointBackgroundColor: '#6366f1' }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+    });
+    if (!wlInRange.length) {
+      const ctx = document.getElementById('chart-weight').getContext('2d');
+      ctx.font = '14px sans-serif'; ctx.fillStyle = '#94a3b8'; ctx.textAlign = 'center';
+      ctx.fillText('No weight entries — log in Profile', document.getElementById('chart-weight').width/2, 100);
+    }
+
+    // Activity pie
+    const actCount = {};
+    ws.forEach(w => { actCount[w.activityLabel] = (actCount[w.activityLabel] || 0) + (w.caloriesBurned || 0); });
+    const actLabels = Object.keys(actCount);
+    const actData   = Object.values(actCount);
+    const palette   = ['#6366f1','#10b981','#f59e0b','#ef4444','#3b82f6','#ec4899','#8b5cf6','#14b8a6'];
+    if (actChart) actChart.destroy();
+    if (actLabels.length) {
+      actChart = new Chart(document.getElementById('chart-activities'), {
+        type: 'doughnut',
+        data: { labels: actLabels, datasets: [{ data: actData, backgroundColor: palette, borderWidth: 0 }] },
+        options: { responsive: false, plugins: { legend: { display: false } }, cutout: '65%' }
+      });
+      document.getElementById('activity-legend').innerHTML = actLabels.map((l, i) =>
+        `<div style="display:flex;align-items:center;gap:8px">
+           <div style="width:12px;height:12px;border-radius:3px;background:${palette[i%palette.length]}"></div>
+           <span>${l}</span>
+           <span style="margin-left:auto;font-weight:700;color:var(--primary)">${actData[i]} kcal</span>
+         </div>`).join('');
+    } else {
+      document.getElementById('activity-legend').innerHTML = '<p style="color:var(--text-muted)">No workouts in range</p>';
+    }
+
+    // All workouts list
+    const allWs = ws.slice().reverse();
+    const listEl = document.getElementById('all-workouts-list');
+    const icons = { walking:'🚶',running:'🏃',cycling:'🚴',swimming:'🏊',weight_training:'🏋️',
+      yoga:'🧘',hiit:'⚡',elliptical:'🔄',jump_rope:'🪢',basketball:'🏀',soccer:'⚽',
+      tennis:'🎾',dancing:'💃',custom:'💪' };
+    listEl.innerHTML = allWs.length ? allWs.map(w => `
+      <div class="log-item">
+        <div class="log-icon">${icons[w.activity] || '💪'}</div>
+        <div class="log-info">
+          <div class="log-name">${w.activityLabel}</div>
+          <div class="log-meta">${App.formatDate(w.date)}${w.duration ? ' · ' + w.duration + ' min' : ''}${w.distanceKm ? ' · ' + w.distanceKm.toFixed(2) + ' km' : ''}</div>
+        </div>
+        <div class="log-kcal">${(w.caloriesBurned||0).toLocaleString()} kcal</div>
+      </div>`).join('')
+      : '<div class="empty-state"><div class="empty-icon">🏃</div><p>No workouts in selected range</p></div>';
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
