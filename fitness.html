@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>FitTrack — Fitness Data</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💪</text></svg>"/>
+  <link rel="stylesheet" href="css/app.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    /* ── Activity Rings ─────────────────────────── */
+    .rings-row { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; padding: 16px 0; }
+    .ring-block { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .ring-svg-wrap { position: relative; width: 100px; height: 100px; }
+    .ring-svg-wrap svg { position: absolute; inset: 0; }
+    .ring-center-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .ring-center-label .val { font-size: 1.1rem; font-weight: 800; line-height: 1; }
+    .ring-center-label .unit { font-size: 0.6rem; color: var(--text-muted); font-weight: 600; }
+    .ring-block .ring-name { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+
+    /* ── Heart Rate Zone bars ───────────────────── */
+    .hr-zones { display: flex; flex-direction: column; gap: 8px; }
+    .hr-zone { display: flex; align-items: center; gap: 10px; font-size: .82rem; }
+    .hr-zone .zone-label { width: 90px; font-weight: 600; flex-shrink: 0; }
+    .hr-zone .zone-range { width: 80px; color: var(--text-muted); font-size: .75rem; flex-shrink: 0; }
+    .hr-zone .zone-bar-wrap { flex: 1; height: 8px; background: var(--border); border-radius: 999px; overflow: hidden; }
+    .hr-zone .zone-bar { height: 100%; border-radius: 999px; }
+    .hr-zone .zone-min { width: 36px; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+    /* ── Workout type pills ─────────────────────── */
+    .workout-type-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+    .wt-pill { background: var(--bg); border: 1.5px solid var(--border); border-radius: 12px;
+               padding: 12px; display: flex; flex-direction: column; gap: 4px; }
+    .wt-pill .wt-icon { font-size: 1.5rem; }
+    .wt-pill .wt-name { font-size: .8rem; font-weight: 700; }
+    .wt-pill .wt-count { font-size: .72rem; color: var(--text-muted); }
+
+    /* ── Import area ────────────────────────────── */
+    .data-type-selector { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .data-toggle { padding: 7px 14px; border-radius: 999px; border: 1.5px solid var(--border);
+                   font-size: .8rem; font-weight: 600; cursor: pointer; background: var(--card); color: var(--text); }
+    .data-toggle.on { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    /* ── Metric grid ────────────────────────────── */
+    .metric-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
+
+    /* ── Sleep stage bar ────────────────────────── */
+    .sleep-bar { display: flex; height: 24px; border-radius: 999px; overflow: hidden; gap: 2px; }
+    .sleep-stage { height: 100%; transition: width .4s ease; }
+    .sleep-legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; font-size: .78rem; }
+    .sleep-legend-item { display: flex; align-items: center; gap: 5px; }
+    .sleep-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <a href="index.html" class="nav-brand">💪 FitTrack</a>
+  <a href="index.html"        class="nav-link"><span class="icon">🏠</span><span class="label">Home</span></a>
+  <a href="workouts.html"     class="nav-link"><span class="icon">🏋️</span><span class="label">Workout</span></a>
+  <a href="nutrition.html"    class="nav-link"><span class="icon">🥗</span><span class="label">Nutrition</span></a>
+  <a href="history.html"      class="nav-link"><span class="icon">📈</span><span class="label">History</span></a>
+  <a href="fitness.html"      class="nav-link active"><span class="icon">📊</span><span class="label">Fitness</span></a>
+  <a href="PLP.html"          class="nav-link"><span class="icon">💪</span><span class="label">PPL</span></a>
+  <a href="apple-health.html" class="nav-link"><span class="icon">🍎</span><span class="label">Health</span></a>
+  <a href="profile.html"      class="nav-link"><span class="icon">👤</span><span class="label">Profile</span></a>
+</nav>
+
+<main>
+  <h1>📊 Fitness Data</h1>
+  <p class="subtitle">Activity rings, heart rate, sleep, VO₂ max &amp; workout sessions from Apple Fitness &amp; Health</p>
+
+  <!-- No data banner -->
+  <div id="no-data-banner" class="alert alert-info" style="margin-bottom:20px;display:none">
+    📱 No fitness data imported yet. <a href="#import-section" style="font-weight:700;color:inherit">Import below</a> or use the <a href="apple-health.html" style="font-weight:700;color:inherit">Apple Health</a> page for the full guide.
+  </div>
+
+  <!-- ── ACTIVITY RINGS ───────────────────────── -->
+  <div class="card" style="margin-bottom:16px" id="rings-card">
+    <div class="section-header">
+      <div class="section-title">🔴🟢🔵 Activity Rings</div>
+      <span id="rings-date" style="font-size:.8rem;color:var(--text-muted)"></span>
+    </div>
+    <div class="rings-row" id="rings-row">
+      <!-- rendered by JS -->
+    </div>
+    <div style="font-size:.78rem;color:var(--text-muted);text-align:center;margin-top:4px">
+      🔴 Move (kcal) &nbsp;·&nbsp; 🟢 Exercise (min) &nbsp;·&nbsp; 🔵 Stand (hrs)
+    </div>
+  </div>
+
+  <!-- ── KEY METRICS GRID ───────────────────── -->
+  <div class="metric-cards" id="metrics-grid">
+    <!-- rendered by JS -->
+  </div>
+
+  <!-- ── CHARTS ROW ────────────────────────── -->
+  <div class="grid-2" style="margin-bottom:16px">
+    <div class="card">
+      <div class="card-title">❤️ Heart Rate (7 days)</div>
+      <div class="chart-container" style="height:180px">
+        <canvas id="chart-hr"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">👟 Steps (7 days)</div>
+      <div class="chart-container" style="height:180px">
+        <canvas id="chart-steps"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">⚡ Active Calories Burned (7 days)</div>
+    <div class="chart-container">
+      <canvas id="chart-active-cal"></canvas>
+    </div>
+  </div>
+
+  <!-- ── SLEEP ─────────────────────────────── -->
+  <div class="card" style="margin-bottom:16px" id="sleep-card">
+    <div class="section-header">
+      <div class="section-title">😴 Sleep</div>
+      <span id="sleep-date" style="font-size:.8rem;color:var(--text-muted)">Last night</span>
+    </div>
+    <div class="grid-4" style="margin-bottom:16px">
+      <div class="stat-tile"><div class="stat-label">🛌 In Bed</div><div class="stat-value" id="sl-inbed">—</div><div class="stat-sub">hours</div></div>
+      <div class="stat-tile"><div class="stat-label">😴 Asleep</div><div class="stat-value" id="sl-asleep">—</div><div class="stat-sub">hours</div></div>
+      <div class="stat-tile"><div class="stat-label">🌊 Deep</div><div class="stat-value" id="sl-deep">—</div><div class="stat-sub">hours</div></div>
+      <div class="stat-tile"><div class="stat-label">👁️ REM</div><div class="stat-value" id="sl-rem">—</div><div class="stat-sub">hours</div></div>
+    </div>
+    <div class="sleep-bar" id="sleep-bar"></div>
+    <div class="sleep-legend">
+      <div class="sleep-legend-item"><div class="sleep-dot" style="background:#4f46e5"></div><span>Deep</span></div>
+      <div class="sleep-legend-item"><div class="sleep-dot" style="background:#7c3aed"></div><span>Core</span></div>
+      <div class="sleep-legend-item"><div class="sleep-dot" style="background:#2563eb"></div><span>REM</span></div>
+      <div class="sleep-legend-item"><div class="sleep-dot" style="background:#94a3b8"></div><span>Awake</span></div>
+    </div>
+  </div>
+
+  <!-- ── HEART RATE ZONES ──────────────────── -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">❤️ Heart Rate Zones (last workout)</div>
+    <div class="hr-zones" id="hr-zones">
+      <!-- rendered by JS -->
+    </div>
+    <div style="margin-top:12px;font-size:.8rem;color:var(--text-muted)">
+      Zones based on your max HR estimate (220 − age). Set your age in <a href="profile.html" style="color:var(--primary)">Profile</a>.
+    </div>
+  </div>
+
+  <!-- ── WORKOUT SESSIONS ──────────────────── -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="section-header">
+      <div class="section-title">🏋️ Fitness Workout Sessions</div>
+      <div class="chip-group">
+        <button class="chip selected" data-wdays="7">7d</button>
+        <button class="chip" data-wdays="30">30d</button>
+        <button class="chip" data-wdays="90">90d</button>
+      </div>
+    </div>
+    <div class="workout-type-grid" id="workout-type-grid" style="margin-bottom:16px"></div>
+    <div id="fitness-workouts-list" class="log-list" style="max-height:360px;overflow-y:auto"></div>
+  </div>
+
+  <!-- ── VO2 MAX ───────────────────────────── -->
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-title">🫁 VO₂ Max Trend</div>
+    <div class="chart-container" style="height:180px">
+      <canvas id="chart-vo2"></canvas>
+    </div>
+    <div style="margin-top:10px;font-size:.8rem;color:var(--text-muted)">
+      <strong>VO₂ Max</strong> = your aerobic fitness level (mL/kg/min). Higher = better cardio capacity.
+      Apple Watch estimates this during outdoor runs.
+    </div>
+  </div>
+
+  <!-- ── IMPORT SECTION ───────────────────── -->
+  <div class="card" id="import-section">
+    <div class="card-title">📥 Import Fitness Data</div>
+    <div class="tabs" style="margin-bottom:16px">
+      <button class="tab-btn active" data-tab="xml">Apple Health XML</button>
+      <button class="tab-btn" data-tab="manual">Manual Entry</button>
+      <button class="tab-btn" data-tab="shortcut">iOS Shortcut JSON</button>
+    </div>
+
+    <!-- XML Import -->
+    <div class="tab-panel active" id="tab-xml">
+      <div class="alert alert-info" style="margin-bottom:12px">
+        Export from <strong>iPhone Health app → Profile photo → Export All Health Data</strong>, then upload <code>export.xml</code> here.
+        This includes workouts, steps, heart rate, sleep, VO₂ max, activity rings, and more.
+      </div>
+      <label class="upload-zone" id="fit-upload-zone" for="fit-file-input" style="margin-bottom:12px;display:block">
+        <div class="upload-icon">📂</div>
+        <div style="font-weight:700;margin-bottom:4px">Drop export.xml here or click to browse</div>
+        <div style="font-size:.8rem;color:var(--text-muted)">Apple Health export.xml (can be large — parsed entirely in-browser)</div>
+      </label>
+      <input type="file" id="fit-file-input" accept=".xml" style="display:none"/>
+      <div id="fit-import-status"></div>
+      <div id="fit-import-preview"></div>
+      <button class="btn btn-primary btn-block" id="fit-confirm-btn" style="display:none;margin-top:12px">✅ Import All Fitness Data</button>
+    </div>
+
+    <!-- Manual Entry -->
+    <div class="tab-panel" id="tab-manual">
+      <div class="card-title" style="margin-bottom:12px">Enter Today's Fitness Data</div>
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0">
+          <label>🔴 Move (kcal goal)</label>
+          <input type="number" id="m-move-goal" placeholder="600"/>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>🔴 Move (kcal done)</label>
+          <input type="number" id="m-move-done" placeholder="450"/>
+        </div>
+      </div>
+      <div style="height:10px"></div>
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0">
+          <label>🟢 Exercise (min goal)</label>
+          <input type="number" id="m-ex-goal" placeholder="30"/>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>🟢 Exercise (min done)</label>
+          <input type="number" id="m-ex-done" placeholder="45"/>
+        </div>
+      </div>
+      <div style="height:10px"></div>
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0">
+          <label>🔵 Stand (hrs goal)</label>
+          <input type="number" id="m-stand-goal" placeholder="12"/>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>🔵 Stand (hrs done)</label>
+          <input type="number" id="m-stand-done" placeholder="10"/>
+        </div>
+      </div>
+      <div style="height:10px"></div>
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0">
+          <label>👟 Steps</label>
+          <input type="number" id="m-steps" placeholder="8500"/>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>🏃 Distance (km)</label>
+          <input type="number" id="m-distance" step="0.01" placeholder="6.2"/>
+        </div>
+      </div>
+      <div style="height:10px"></div>
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0">
+          <label>❤️ Resting HR (bpm)</label>
+          <input type="number" id="m-rhr" placeholder="62"/>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>🫁 VO₂ Max</label>
+          <input type="number" id="m-vo2" step="0.1" placeholder="42.5"/>
+        </div>
+      </div>
+      <div style="height:10px"></div>
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0">
+          <label>😴 Sleep (hours)</label>
+          <input type="number" id="m-sleep" step="0.1" placeholder="7.5"/>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>📅 Date</label>
+          <input type="date" id="m-date"/>
+        </div>
+      </div>
+      <div style="height:16px"></div>
+      <button class="btn btn-primary btn-block" id="save-manual-btn">💾 Save Fitness Data</button>
+    </div>
+
+    <!-- iOS Shortcut JSON paste -->
+    <div class="tab-panel" id="tab-shortcut">
+      <div class="alert alert-info" style="margin-bottom:12px">
+        If you've set up an iOS Shortcut (see <a href="apple-health.html" style="color:var(--primary)">Apple Health page</a>),
+        paste the JSON payload here, or click <strong>Check Auto-Sync</strong> to load from <code>data/health.json</code>.
+      </div>
+      <div class="form-group">
+        <label>Paste JSON from iOS Shortcut</label>
+        <textarea id="shortcut-paste" rows="8" style="font-family:monospace;font-size:.8rem" placeholder='{
+  "date": "2026-11-15",
+  "move": 480, "moveGoal": 600,
+  "exercise": 42, "exerciseGoal": 30,
+  "stand": 11, "standGoal": 12,
+  "steps": 9240,
+  "distance": 7.1,
+  "restingHR": 61,
+  "vo2max": 43.2,
+  "sleepHours": 7.8,
+  "activeEnergy": 520
+}'></textarea>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary" id="paste-import-btn">📥 Import Pasted JSON</button>
+        <button class="btn btn-outline" id="check-sync-btn2">🔄 Check Auto-Sync File</button>
+      </div>
+      <div id="shortcut-status" style="margin-top:12px"></div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/storage.js"></script>
+<script src="js/calories.js"></script>
+<script src="js/app.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  // ── Tabs ─────────────────────────────────────────────
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const wrap = btn.closest('.card, .tabs')?.parentElement || document;
+      btn.closest('.tabs').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.closest('.tabs').parentElement.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      const target = btn.closest('.tabs').parentElement.querySelector('#tab-' + btn.dataset.tab);
+      if (target) target.classList.add('active');
+    });
+  });
+
+  // ── Workout filter chips ─────────────────────────────
+  let wDays = 7;
+  document.querySelectorAll('[data-wdays]').forEach(c => {
+    c.addEventListener('click', () => {
+      document.querySelectorAll('[data-wdays]').forEach(x => x.classList.remove('selected'));
+      c.classList.add('selected');
+      wDays = parseInt(c.dataset.wdays);
+      renderFitnessWorkouts();
+    });
+  });
+
+  document.getElementById('m-date').value = App.today();
+
+  // ── Data store helpers ───────────────────────────────
+  function getFitnessEntries() { return Storage.getArray('fitness_data'); }
+  function getLatest()         { return getFitnessEntries().sort((a,b) => b.date.localeCompare(a.date))[0] || null; }
+
+  // ── Render everything ────────────────────────────────
+  function renderAll() {
+    const entries = getFitnessEntries();
+    if (!entries.length) {
+      document.getElementById('no-data-banner').style.display = 'block';
+    } else {
+      document.getElementById('no-data-banner').style.display = 'none';
+    }
+    renderRings();
+    renderMetrics();
+    renderCharts();
+    renderSleep();
+    renderHRZones();
+    renderFitnessWorkouts();
+    renderVO2();
+  }
+
+  // ── Activity Rings ───────────────────────────────────
+  function renderRings() {
+    const d = getLatest();
+    const el = document.getElementById('rings-row');
+    const dateEl = document.getElementById('rings-date');
+    if (d) dateEl.textContent = App.formatDate(d.date);
+
+    const rings = [
+      { label: 'Move', icon: '🔴', value: d?.move || 0, goal: d?.moveGoal || 600, unit: 'kcal', color: '#ef4444' },
+      { label: 'Exercise', icon: '🟢', value: d?.exercise || 0, goal: d?.exerciseGoal || 30, unit: 'min', color: '#10b981' },
+      { label: 'Stand', icon: '🔵', value: d?.stand || 0, goal: d?.standGoal || 12, unit: 'hrs', color: '#3b82f6' },
+    ];
+    el.innerHTML = rings.map(r => {
+      const pct = Math.min(r.value / (r.goal || 1), 1);
+      const circ = 2 * Math.PI * 38;
+      const offset = circ * (1 - pct);
+      return `<div class="ring-block">
+        <div class="ring-svg-wrap">
+          <svg width="100" height="100" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="38" fill="none" stroke="${r.color}22" stroke-width="12"/>
+            <circle cx="50" cy="50" r="38" fill="none" stroke="${r.color}" stroke-width="12"
+              stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}"
+              stroke-linecap="round" transform="rotate(-90 50 50)"
+              style="transition:stroke-dashoffset .6s ease"/>
+          </svg>
+          <div class="ring-center-label">
+            <div class="val" style="color:${r.color}">${r.value}</div>
+            <div class="unit">${r.unit}</div>
+          </div>
+        </div>
+        <div class="ring-name" style="color:${r.color}">${r.icon} ${r.label}</div>
+        <div style="font-size:.72rem;color:var(--text-muted)">Goal: ${r.goal} ${r.unit}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // ── Key Metrics ──────────────────────────────────────
+  function renderMetrics() {
+    const d = getLatest();
+    const grid = document.getElementById('metrics-grid');
+    const metrics = [
+      { label: '👟 Steps',      value: (d?.steps || 0).toLocaleString(), sub: 'today' },
+      { label: '🏃 Distance',   value: d?.distance ? d.distance.toFixed(1) + ' km' : '—', sub: 'today' },
+      { label: '❤️ Resting HR', value: d?.restingHR ? d.restingHR + ' bpm' : '—', sub: 'resting' },
+      { label: '😴 Sleep',      value: d?.sleepHours ? d.sleepHours.toFixed(1) + 'h' : '—', sub: 'last night' },
+      { label: '🫁 VO₂ Max',    value: d?.vo2max ? d.vo2max.toFixed(1) : '—', sub: 'mL/kg/min' },
+      { label: '⚡ Active Cal', value: (d?.activeEnergy || d?.move || 0).toLocaleString() + ' kcal', sub: 'today' },
+    ];
+    grid.innerHTML = metrics.map(m => `
+      <div class="stat-tile">
+        <div class="stat-label">${m.label}</div>
+        <div class="stat-value">${m.value}</div>
+        <div class="stat-sub">${m.sub}</div>
+      </div>`).join('');
+  }
+
+  // ── Charts ───────────────────────────────────────────
+  let hrChart, stepsChart, calChart;
+  function renderCharts() {
+    const entries = getFitnessEntries().sort((a,b) => a.date.localeCompare(b.date)).slice(-7);
+    const labels = entries.map(e => { const d = new Date(e.date + 'T00:00:00'); return d.toLocaleDateString(undefined, { month:'short', day:'numeric' }); });
+
+    const hrData     = entries.map(e => e.restingHR || null);
+    const stepsData  = entries.map(e => e.steps || 0);
+    const calData    = entries.map(e => e.activeEnergy || e.move || 0);
+
+    const chartOpts = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
+
+    if (hrChart)    hrChart.destroy();
+    if (stepsChart) stepsChart.destroy();
+    if (calChart)   calChart.destroy();
+
+    hrChart = new Chart(document.getElementById('chart-hr'), {
+      type: 'line',
+      data: { labels, datasets: [{ label: 'Resting HR', data: hrData,
+        borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,.1)', fill: true,
+        tension: 0.3, pointBackgroundColor: '#ef4444', spanGaps: true }] },
+      options: { ...chartOpts, scales: { y: { beginAtZero: false, suggestedMin: 40, suggestedMax: 100 } } }
+    });
+    stepsChart = new Chart(document.getElementById('chart-steps'), {
+      type: 'bar',
+      data: { labels, datasets: [{ label: 'Steps', data: stepsData,
+        backgroundColor: 'rgba(16,185,129,.7)', borderRadius: 6 }] },
+      options: chartOpts
+    });
+    calChart = new Chart(document.getElementById('chart-active-cal'), {
+      type: 'bar',
+      data: { labels, datasets: [{ label: 'Active Calories', data: calData,
+        backgroundColor: 'rgba(239,68,68,.75)', borderRadius: 6 }] },
+      options: chartOpts
+    });
+  }
+
+  // ── Sleep ─────────────────────────────────────────────
+  function renderSleep() {
+    const d = getLatest();
+    if (!d) return;
+    const total = d.sleepHours || 0;
+    const deep  = d.deepSleep  || (total * 0.18);
+    const rem   = d.remSleep   || (total * 0.21);
+    const core  = d.coreSleep  || (total * 0.56);
+    const awake = Math.max(0, total - deep - rem - core);
+
+    document.getElementById('sl-inbed').textContent  = d.inBed    ? d.inBed.toFixed(1) : (total + 0.3).toFixed(1);
+    document.getElementById('sl-asleep').textContent = total      ? total.toFixed(1) : '—';
+    document.getElementById('sl-deep').textContent   = deep       ? deep.toFixed(1)  : '—';
+    document.getElementById('sl-rem').textContent    = rem        ? rem.toFixed(1)   : '—';
+
+    if (d.date) document.getElementById('sleep-date').textContent = App.formatDate(d.date);
+
+    const bar = document.getElementById('sleep-bar');
+    bar.innerHTML = [
+      { pct: deep/total,  color: '#4f46e5' },
+      { pct: core/total,  color: '#7c3aed' },
+      { pct: rem/total,   color: '#2563eb' },
+      { pct: awake/total, color: '#94a3b8' },
+    ].map(s => `<div class="sleep-stage" style="width:${(s.pct*100).toFixed(1)}%;background:${s.color}"></div>`).join('');
+  }
+
+  // ── HR Zones ─────────────────────────────────────────
+  function renderHRZones() {
+    const profile = App.getProfile();
+    const age = profile?.age || 30;
+    const maxHR = 220 - age;
+    const zones = [
+      { name: 'Zone 1 — Rest',    pct: [0, .5],    color: '#94a3b8', key: 'z1' },
+      { name: 'Zone 2 — Fat Burn',pct: [.5, .6],   color: '#10b981', key: 'z2' },
+      { name: 'Zone 3 — Aerobic', pct: [.6, .7],   color: '#f59e0b', key: 'z3' },
+      { name: 'Zone 4 — Anaerobic',pct:[.7, .85],  color: '#f97316', key: 'z4' },
+      { name: 'Zone 5 — Max',     pct: [.85, 1],   color: '#ef4444', key: 'z5' },
+    ];
+
+    const d = getLatest();
+    const el = document.getElementById('hr-zones');
+    el.innerHTML = zones.map(z => {
+      const lo = Math.round(maxHR * z.pct[0]);
+      const hi = Math.round(maxHR * z.pct[1]);
+      const mins = d?.hrZones?.[z.key] || 0;
+      const pct = d?.hrZones ? Math.min(mins / 60 * 100, 100) : 0;
+      return `<div class="hr-zone">
+        <div class="zone-label" style="color:${z.color}">${z.name.split(' — ')[0]}<br><small style="color:var(--text-muted)">${z.name.split(' — ')[1]}</small></div>
+        <div class="zone-range">${lo}–${hi} bpm</div>
+        <div class="zone-bar-wrap"><div class="zone-bar" style="width:${pct}%;background:${z.color}"></div></div>
+        <div class="zone-min">${mins ? mins + 'm' : '—'}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // ── Fitness Workouts ──────────────────────────────────
+  function renderFitnessWorkouts() {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - wDays);
+    const all = Storage.getArray('workouts').filter(w => {
+      return w.date >= cutoff.toISOString().slice(0, 10) && (w.source === 'apple_fitness' || w.source === 'apple_health' || w.source === 'health_json');
+    });
+    const workoutsAll = all.length ? all : Storage.getArray('workouts').filter(w => {
+      return w.date >= cutoff.toISOString().slice(0, 10);
+    });
+
+    // Type summary
+    const typeCounts = {};
+    workoutsAll.forEach(w => {
+      const t = w.activityLabel || w.activity;
+      typeCounts[t] = (typeCounts[t] || { count: 0, kcal: 0 });
+      typeCounts[t].count++;
+      typeCounts[t].kcal += (w.caloriesBurned || 0);
+    });
+    const typeIcons = { running:'🏃', walking:'🚶', cycling:'🚴', swimming:'🏊', weight_training:'🏋️',
+      yoga:'🧘', hiit:'⚡', elliptical:'🔄', custom:'💪' };
+    document.getElementById('workout-type-grid').innerHTML = Object.entries(typeCounts).length
+      ? Object.entries(typeCounts).map(([t, v]) => `
+        <div class="wt-pill">
+          <div class="wt-icon">${typeIcons[t.toLowerCase()] || '💪'}</div>
+          <div class="wt-name">${t}</div>
+          <div class="wt-count">${v.count} session${v.count>1?'s':''} · ${v.kcal.toLocaleString()} kcal</div>
+        </div>`).join('')
+      : '<div style="color:var(--text-muted);font-size:.88rem;grid-column:1/-1">No workouts in this range</div>';
+
+    // List
+    const listEl = document.getElementById('fitness-workouts-list');
+    listEl.innerHTML = workoutsAll.length ? workoutsAll.slice().reverse().map(w => `
+      <div class="log-item">
+        <div class="log-icon">${typeIcons[w.activity] || '💪'}</div>
+        <div class="log-info">
+          <div class="log-name">${w.activityLabel || w.activity}</div>
+          <div class="log-meta">${App.formatDate(w.date)}${w.duration ? ' · ' + w.duration + 'min' : ''}${w.distanceKm ? ' · ' + w.distanceKm.toFixed(2) + 'km' : ''}${w.avgHR ? ' · ❤️ ' + w.avgHR + 'bpm' : ''}</div>
+        </div>
+        <div class="log-kcal">${(w.caloriesBurned||0).toLocaleString()} kcal</div>
+      </div>`).join('')
+      : '<div class="empty-state"><div class="empty-icon">🏃</div><p>No workout sessions — import from Apple Health XML or add manually</p></div>';
+  }
+
+  // ── VO2 Max chart ─────────────────────────────────────
+  let vo2Chart;
+  function renderVO2() {
+    const entries = getFitnessEntries().filter(e => e.vo2max).sort((a,b) => a.date.localeCompare(b.date));
+    if (vo2Chart) vo2Chart.destroy();
+    vo2Chart = new Chart(document.getElementById('chart-vo2'), {
+      type: 'line',
+      data: {
+        labels: entries.map(e => App.formatDate(e.date)),
+        datasets: [{ label: 'VO₂ Max', data: entries.map(e => e.vo2max),
+          borderColor: '#8b5cf6', backgroundColor: 'rgba(139,92,246,.1)', fill: true,
+          tension: 0.4, pointBackgroundColor: '#8b5cf6' }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: false, suggestedMin: 25, suggestedMax: 60 } } }
+    });
+    if (!entries.length) {
+      const ctx = document.getElementById('chart-vo2').getContext('2d');
+      ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
+      ctx.font = '14px sans-serif'; ctx.fillStyle = '#94a3b8'; ctx.textAlign = 'center';
+      ctx.fillText('No VO₂ Max data — Apple Watch estimates it during outdoor runs', ctx.canvas.width/2, 80);
+    }
+  }
+
+  // ── Apple Health XML parser (extended) ──────────────
+  const zone = document.getElementById('fit-upload-zone');
+  const input = document.getElementById('fit-file-input');
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag'));
+  zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('drag'); if (e.dataTransfer.files[0]) handleXML(e.dataTransfer.files[0]); });
+  input.addEventListener('change', e => { if (e.target.files[0]) handleXML(e.target.files[0]); });
+
+  let parsedXML = null;
+
+  function handleXML(file) {
+    const status = document.getElementById('fit-import-status');
+    status.innerHTML = `<div class="alert alert-info">⏳ Parsing <strong>${file.name}</strong> (${(file.size/1024/1024).toFixed(1)} MB) — large files may take a moment…</div>`;
+    document.getElementById('fit-confirm-btn').style.display = 'none';
+
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const xml = e.target.result;
+        const doc = new DOMParser().parseFromString(xml, 'text/xml');
+        parsedXML = extractAll(doc);
+        showXMLPreview(parsedXML);
+        status.innerHTML = `<div class="alert alert-success">✅ Parsed ${parsedXML.workouts.length} workouts, ${Object.keys(parsedXML.stepsByDate).length} days of steps, ${Object.keys(parsedXML.hrByDate).length} days of heart rate data.</div>`;
+        document.getElementById('fit-confirm-btn').style.display = 'block';
+      } catch (err) {
+        status.innerHTML = `<div class="alert alert-warning">⚠️ Parse error: ${err.message}</div>`;
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function extractAll(doc) {
+    const records  = [...doc.querySelectorAll('Record')];
+    const workouts = [...doc.querySelectorAll('Workout')];
+    const activity = [...doc.querySelectorAll('ActivitySummary')];
+
+    const stepsByDate  = {};
+    const hrByDate     = {};
+    const energyByDate = {};
+    const distByDate   = {};
+    const sleepByDate  = {};
+    const vo2Data      = [];
+
+    records.forEach(r => {
+      const type  = r.getAttribute('type') || '';
+      const date  = (r.getAttribute('startDate') || '').slice(0, 10);
+      const val   = parseFloat(r.getAttribute('value') || 0);
+
+      if (type.includes('StepCount'))            { stepsByDate[date]  = (stepsByDate[date]  || 0) + val; }
+      if (type.includes('ActiveEnergyBurned'))   { energyByDate[date] = (energyByDate[date] || 0) + val; }
+      if (type.includes('DistanceWalking') || type.includes('DistanceRunning')) { distByDate[date] = (distByDate[date] || 0) + val / 1000; }
+      if (type.includes('HeartRate'))            { if (!hrByDate[date]) hrByDate[date] = []; hrByDate[date].push(val); }
+      if (type.includes('SleepAnalysis'))        { sleepByDate[date]  = (sleepByDate[date]  || 0) + val / 3600; }
+      if (type.includes('VO2Max'))               { vo2Data.push({ date, vo2max: val }); }
+    });
+
+    // Activity ring summaries
+    const ringsByDate = {};
+    activity.forEach(a => {
+      const date = a.getAttribute('dateComponents');
+      if (!date) return;
+      ringsByDate[date] = {
+        move:         parseFloat(a.getAttribute('activeEnergyBurned') || 0),
+        moveGoal:     parseFloat(a.getAttribute('activeEnergyBurnedGoal') || 600),
+        exercise:     parseFloat(a.getAttribute('appleExerciseTime') || 0),
+        exerciseGoal: parseFloat(a.getAttribute('appleExerciseTimeGoal') || 30),
+        stand:        parseFloat(a.getAttribute('appleStandHours') || 0),
+        standGoal:    parseFloat(a.getAttribute('appleStandHoursGoal') || 12),
+      };
+    });
+
+    // Merge everything into daily fitness entries
+    const allDates = new Set([...Object.keys(stepsByDate), ...Object.keys(hrByDate), ...Object.keys(ringsByDate)]);
+    const fitnessEntries = [...allDates].map(date => ({
+      date,
+      steps:        Math.round(stepsByDate[date] || 0),
+      activeEnergy: Math.round(energyByDate[date] || 0),
+      distance:     distByDate[date] || 0,
+      restingHR:    hrByDate[date] ? Math.round(hrByDate[date].reduce((a,b)=>a+b,0)/hrByDate[date].length) : null,
+      sleepHours:   sleepByDate[date] || 0,
+      ...(ringsByDate[date] || {}),
+      source: 'apple_health_xml',
+    }));
+
+    // Workout sessions
+    const parsedWorkouts = workouts.map(w => ({
+      date:         (w.getAttribute('startDate') || '').slice(0, 10),
+      type:         w.getAttribute('workoutActivityType')?.replace('HKWorkoutActivityType','') || 'Unknown',
+      durationMin:  Math.round(parseFloat(w.getAttribute('duration') || 0)),
+      kcal:         Math.round(parseFloat(w.getAttribute('totalEnergyBurned') || 0)),
+      distanceKm:   (parseFloat(w.getAttribute('totalDistance') || 0)) / 1000,
+      avgHR:        null,
+    }));
+
+    return { fitnessEntries, workouts: parsedWorkouts, vo2Data };
+  }
+
+  function showXMLPreview(data) {
+    const days = data.fitnessEntries.length;
+    const wd   = data.workouts.length;
+    const vo2  = data.vo2Data.length;
+    document.getElementById('fit-import-preview').innerHTML = `
+      <div class="grid-4" style="margin-top:12px">
+        <div class="stat-tile"><div class="stat-label">📅 Days of Data</div><div class="stat-value">${days}</div></div>
+        <div class="stat-tile"><div class="stat-label">🏋️ Workouts</div><div class="stat-value">${wd}</div></div>
+        <div class="stat-tile"><div class="stat-label">🫁 VO₂ Readings</div><div class="stat-value">${vo2}</div></div>
+        <div class="stat-tile"><div class="stat-label">⚡ Total kcal</div><div class="stat-value">${data.fitnessEntries.reduce((s,e)=>s+(e.activeEnergy||0),0).toLocaleString()}</div></div>
+      </div>`;
+  }
+
+  document.getElementById('fit-confirm-btn').addEventListener('click', () => {
+    if (!parsedXML) return;
+    // Save fitness entries (merge with existing)
+    parsedXML.fitnessEntries.forEach(entry => {
+      const existing = getFitnessEntries();
+      const idx = existing.findIndex(e => e.date === entry.date);
+      if (idx >= 0) existing[idx] = { ...existing[idx], ...entry };
+      else existing.push(entry);
+      Storage.set('fitness_data', existing);
+    });
+    // Save workouts
+    let added = 0;
+    parsedXML.workouts.forEach(w => {
+      if (!w.date || !w.kcal) return;
+      const existing = Storage.getArray('workouts');
+      if (existing.find(x => x.date === w.date && x.caloriesBurned === w.kcal && x.source === 'apple_fitness')) return;
+      Storage.appendToArray('workouts', {
+        id: App.uuid(), type: 'activity', activity: w.type.toLowerCase(),
+        activityLabel: w.type, duration: w.durationMin, distanceKm: w.distanceKm,
+        caloriesBurned: w.kcal, avgHR: w.avgHR, date: w.date, source: 'apple_fitness',
+        createdAt: new Date().toISOString(),
+      });
+      added++;
+    });
+    // Save VO2
+    parsedXML.vo2Data.forEach(v => {
+      const existing = getFitnessEntries();
+      const idx = existing.findIndex(e => e.date === v.date);
+      if (idx >= 0) { existing[idx].vo2max = v.vo2max; Storage.set('fitness_data', existing); }
+      else { const arr = getFitnessEntries(); arr.push({ date: v.date, vo2max: v.vo2max }); Storage.set('fitness_data', arr); }
+    });
+    App.showToast(`✅ Imported ${parsedXML.fitnessEntries.length} days + ${added} workouts`);
+    renderAll();
+  });
+
+  // ── Manual save ──────────────────────────────────────
+  document.getElementById('save-manual-btn').addEventListener('click', () => {
+    const date = document.getElementById('m-date').value || App.today();
+    const entry = {
+      date,
+      move:         parseFloat(document.getElementById('m-move-done').value)  || 0,
+      moveGoal:     parseFloat(document.getElementById('m-move-goal').value)  || 600,
+      exercise:     parseFloat(document.getElementById('m-ex-done').value)    || 0,
+      exerciseGoal: parseFloat(document.getElementById('m-ex-goal').value)    || 30,
+      stand:        parseFloat(document.getElementById('m-stand-done').value) || 0,
+      standGoal:    parseFloat(document.getElementById('m-stand-goal').value) || 12,
+      steps:        parseInt(document.getElementById('m-steps').value)        || 0,
+      distance:     parseFloat(document.getElementById('m-distance').value)   || 0,
+      restingHR:    parseInt(document.getElementById('m-rhr').value)          || null,
+      vo2max:       parseFloat(document.getElementById('m-vo2').value)        || null,
+      sleepHours:   parseFloat(document.getElementById('m-sleep').value)      || 0,
+      activeEnergy: parseFloat(document.getElementById('m-move-done').value)  || 0,
+      source: 'manual',
+    };
+    const existing = getFitnessEntries();
+    const idx = existing.findIndex(e => e.date === date);
+    if (idx >= 0) existing[idx] = { ...existing[idx], ...entry };
+    else existing.push(entry);
+    Storage.set('fitness_data', existing);
+    App.showToast('✅ Fitness data saved');
+    renderAll();
+  });
+
+  // ── Shortcut paste ───────────────────────────────────
+  document.getElementById('paste-import-btn').addEventListener('click', () => {
+    try {
+      const json = JSON.parse(document.getElementById('shortcut-paste').value);
+      importFromJSON(json, 'shortcut');
+    } catch { App.showToast('Invalid JSON', 'error'); }
+  });
+
+  document.getElementById('check-sync-btn2').addEventListener('click', async () => {
+    const el = document.getElementById('shortcut-status');
+    el.innerHTML = '<p style="color:var(--text-muted)">⏳ Checking data/health.json…</p>';
+    try {
+      const res = await fetch('./data/health.json?t=' + Date.now());
+      if (!res.ok) throw new Error('Not found');
+      const json = await res.json();
+      if (!json.date) throw new Error('No date field');
+      importFromJSON(json, 'health_json');
+      el.innerHTML = `<div class="alert alert-success">✅ Loaded sync data for ${json.date}</div>`;
+    } catch {
+      el.innerHTML = `<div class="alert alert-warning">📭 No data/health.json found. Set up iOS Shortcut to auto-sync.</div>`;
+    }
+  });
+
+  function importFromJSON(json, source) {
+    const date = json.date || App.today();
+    const entry = {
+      date,
+      move:         parseFloat(json.move || json.activeEnergy || 0),
+      moveGoal:     parseFloat(json.moveGoal || 600),
+      exercise:     parseFloat(json.exercise || json.exerciseMinutes || 0),
+      exerciseGoal: parseFloat(json.exerciseGoal || 30),
+      stand:        parseFloat(json.stand || 0),
+      standGoal:    parseFloat(json.standGoal || 12),
+      steps:        parseInt(json.steps || 0),
+      distance:     parseFloat(json.distance || 0),
+      restingHR:    parseInt(json.restingHR || 0) || null,
+      vo2max:       parseFloat(json.vo2max || 0) || null,
+      sleepHours:   parseFloat(json.sleepHours || 0),
+      activeEnergy: parseFloat(json.activeEnergy || json.move || 0),
+      source,
+    };
+    const existing = getFitnessEntries();
+    const idx = existing.findIndex(e => e.date === date);
+    if (idx >= 0) existing[idx] = { ...existing[idx], ...entry };
+    else existing.push(entry);
+    Storage.set('fitness_data', existing);
+    App.showToast(`✅ Fitness data for ${date} imported`);
+    renderAll();
+  }
+
+  renderAll();
+})();
+</script>
+</body>
+</html>

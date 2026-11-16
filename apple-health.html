@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>FitTrack — Apple Health</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💪</text></svg>"/>
+  <link rel="stylesheet" href="css/app.css"/>
+</head>
+<body>
+
+<nav class="top-nav">
+  <a href="index.html" class="nav-brand">💪 FitTrack</a>
+  <a href="index.html"        class="nav-link"><span class="icon">🏠</span><span class="label">Home</span></a>
+  <a href="workouts.html"     class="nav-link"><span class="icon">🏋️</span><span class="label">Workout</span></a>
+  <a href="nutrition.html"    class="nav-link"><span class="icon">🥗</span><span class="label">Nutrition</span></a>
+  <a href="history.html"      class="nav-link"><span class="icon">📈</span><span class="label">History</span></a>
+  <a href="apple-health.html" class="nav-link active"><span class="icon">🍎</span><span class="label">Health</span></a>
+  <a href="profile.html"      class="nav-link"><span class="icon">👤</span><span class="label">Profile</span></a>
+  <a href="fitness.html"      class="nav-link"><span class="icon">📊</span><span class="label">Fitness</span></a>
+  <a href="PLP.html"          class="nav-link"><span class="icon">💪</span><span class="label">PPL</span></a>
+</nav>
+
+<main>
+  <h1>🍎 Apple Health &amp; Fitness Import</h1>
+  <p class="subtitle">Import Health data, Fitness Activity Rings, workouts, heart rate, sleep &amp; more — free, private, no backend</p>
+
+  <div class="alert alert-info" style="margin-bottom:20px">
+    <strong>How it works:</strong> Apple HealthKit doesn't expose a web API, but you can get your data into FitTrack in two ways below — both are 100% free and your data stays on your device.
+  </div>
+
+  <!-- Method Cards -->
+  <div class="grid-2" style="margin-bottom:20px">
+    <div class="card" style="border:2px solid var(--primary)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <span style="font-size:2rem">📁</span>
+        <div>
+          <div class="section-title">Method 1: Import Export File</div>
+          <div style="font-size:.8rem;color:var(--text-muted)">Manual · Easiest · 100% Free</div>
+        </div>
+      </div>
+      <p style="font-size:.88rem;color:var(--text-muted);margin-bottom:16px">
+        Export your Health data from the iPhone Health app and upload the JSON/CSV here. FitTrack will parse it and import your workouts and steps.
+      </p>
+      <ul class="steps-list" style="margin-bottom:16px">
+        <li><p>Open <strong>Health app</strong> → tap your profile photo → <strong>Export All Health Data</strong></p></li>
+        <li><p>Wait for the zip to generate, then share it somewhere accessible</p></li>
+        <li><p>Extract the zip and upload <code>export.xml</code> below</p></li>
+      </ul>
+
+      <label class="upload-zone" id="upload-zone" for="health-file-input">
+        <div class="upload-icon">📂</div>
+        <div style="font-weight:700;margin-bottom:4px">Drop file here or click to browse</div>
+        <div style="font-size:.8rem;color:var(--text-muted)">Accepts: export.xml, export.json, CSV</div>
+      </label>
+      <input type="file" id="health-file-input" accept=".xml,.json,.csv" style="display:none"/>
+
+      <div id="import-status" style="margin-top:12px"></div>
+      <div id="import-preview" style="margin-top:12px"></div>
+      <button class="btn btn-primary btn-block" id="confirm-import-btn" style="display:none;margin-top:12px">✅ Import to FitTrack</button>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <span style="font-size:2rem">⚡</span>
+        <div>
+          <div class="section-title">Method 2: iOS Shortcuts Automation</div>
+          <div style="font-size:.8rem;color:var(--text-muted)">Automatic Daily Sync · Free · Setup once</div>
+        </div>
+      </div>
+      <p style="font-size:.88rem;color:var(--text-muted);margin-bottom:16px">
+        Use the iOS Shortcuts app to automatically push your daily Apple Health data to your GitHub repo, which FitTrack reads on load.
+      </p>
+      <ul class="steps-list" style="margin-bottom:16px">
+        <li><p>Generate a <strong>GitHub Personal Access Token</strong> (PAT) with <em>repo contents write</em> permission at <a href="https://github.com/settings/tokens" target="_blank" style="color:var(--primary)">github.com/settings/tokens</a></p></li>
+        <li><p>Open <strong>Shortcuts app</strong> on iPhone → tap <strong>+</strong> → <em>Add Action</em> → search "Get Health Samples"</p></li>
+        <li><p>Add: Steps, Active Energy, Workout Minutes, Distance for Today</p></li>
+        <li><p>Add a <strong>Get Contents of URL</strong> action — set URL to your repo's GitHub API endpoint and paste your PAT in the headers (see template below)</p></li>
+        <li><p>Set as a <strong>daily automation</strong> — runs at midnight each night</p></li>
+        <li><p>FitTrack automatically reads <code>data/health.json</code> from your repo on load</p></li>
+      </ul>
+
+      <!-- PAT setup -->
+      <div class="form-group">
+        <label>Your GitHub Username</label>
+        <input type="text" id="gh-user" placeholder="e.g. jaddBen"/>
+      </div>
+      <div class="form-group">
+        <label>Your Repo Name</label>
+        <input type="text" id="gh-repo" placeholder="e.g. PLP"/>
+      </div>
+      <button class="btn btn-outline btn-block" id="gen-shortcut-btn">🔗 Generate Shortcut Template</button>
+      <div id="shortcut-output" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+  <!-- Synced Health Data View -->
+  <div class="card" id="health-data-card" style="display:none;margin-bottom:16px">
+    <div class="card-title">📊 Loaded Health Data</div>
+    <div id="health-data-view"></div>
+  </div>
+
+  <!-- data/health.json auto-reader -->
+  <div class="card">
+    <div class="card-title">📡 Live GitHub Sync Status</div>
+    <div class="alert alert-info" style="margin-bottom:12px">
+      If you've set up the iOS Shortcut above, FitTrack will auto-read <code>data/health.json</code> from your GitHub Pages repo.
+    </div>
+    <div id="gh-sync-status">
+      <button class="btn btn-outline" id="check-sync-btn">🔄 Check for Synced Data</button>
+    </div>
+    <div id="gh-sync-result" style="margin-top:12px"></div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/storage.js"></script>
+<script src="js/calories.js"></script>
+<script src="js/app.js"></script>
+<script>
+(function() {
+  let parsedData = null;
+
+  // ── File Upload ──────────────────────────────────────────
+  const zone = document.getElementById('upload-zone');
+  const input = document.getElementById('health-file-input');
+
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('drag');
+    const f = e.dataTransfer.files[0];
+    if (f) handleFile(f);
+  });
+  input.addEventListener('change', e => { if (e.target.files[0]) handleFile(e.target.files[0]); });
+
+  function handleFile(file) {
+    const status = document.getElementById('import-status');
+    status.innerHTML = `<div class="alert alert-info">⏳ Reading <strong>${file.name}</strong> (${(file.size/1024/1024).toFixed(1)} MB)…</div>`;
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const text = e.target.result;
+        if (file.name.endsWith('.json')) {
+          parsedData = JSON.parse(text);
+          showPreview(parsedData);
+        } else if (file.name.endsWith('.xml')) {
+          parsedData = parseAppleHealthXML(text);
+          showPreview(parsedData);
+        } else if (file.name.endsWith('.csv')) {
+          parsedData = parseCSV(text);
+          showPreview(parsedData);
+        } else {
+          status.innerHTML = '<div class="alert alert-warning">⚠️ Unsupported file type. Use export.xml, export.json, or CSV.</div>';
+        }
+      } catch(err) {
+        status.innerHTML = `<div class="alert alert-warning">⚠️ Could not parse file: ${err.message}</div>`;
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function parseAppleHealthXML(xml) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(xml, 'text/xml');
+    const records = [...doc.querySelectorAll('Record')];
+    const workouts = [...doc.querySelectorAll('Workout')];
+
+    const stepsByDate = {};
+    const energyByDate = {};
+    const distByDate = {};
+
+    records.forEach(r => {
+      const type  = r.getAttribute('type') || '';
+      const date  = (r.getAttribute('startDate') || '').slice(0, 10);
+      const value = parseFloat(r.getAttribute('value') || 0);
+      if (type.includes('StepCount'))      stepsByDate[date]  = (stepsByDate[date]  || 0) + value;
+      if (type.includes('ActiveEnergy'))   energyByDate[date] = (energyByDate[date] || 0) + value;
+      if (type.includes('DistanceWalking'))distByDate[date]   = (distByDate[date]   || 0) + value / 1000; // m→km
+    });
+
+    const parsedWorkouts = workouts.map(w => ({
+      date:         (w.getAttribute('startDate') || '').slice(0, 10),
+      type:         w.getAttribute('workoutActivityType')?.replace('HKWorkoutActivityType','') || 'Unknown',
+      durationMin:  Math.round(parseFloat(w.getAttribute('duration') || 0)),
+      kcal:         Math.round(parseFloat(w.getAttribute('totalEnergyBurned') || 0)),
+      distanceKm:   parseFloat(w.getAttribute('totalDistance') || 0) / 1000,
+    }));
+
+    return { type: 'apple_health_xml', stepsByDate, energyByDate, distByDate, workouts: parsedWorkouts };
+  }
+
+  function parseCSV(csv) {
+    const lines = csv.trim().split('\n');
+    const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/"/g,''));
+    const rows = lines.slice(1).map(l => {
+      const vals = l.split(',').map(v => v.trim().replace(/"/g,''));
+      const obj = {};
+      headers.forEach((h, i) => obj[h] = vals[i]);
+      return obj;
+    });
+    return { type: 'csv', rows };
+  }
+
+  function showPreview(data) {
+    const status = document.getElementById('import-status');
+    const preview = document.getElementById('import-preview');
+    if (data.type === 'apple_health_xml') {
+      const wCount = data.workouts.length;
+      const dCount = Object.keys(data.stepsByDate).length;
+      status.innerHTML = `<div class="alert alert-success">✅ Parsed successfully!</div>`;
+      preview.innerHTML = `
+        <div class="grid-3">
+          <div class="stat-tile"><div class="stat-label">🏋️ Workouts</div><div class="stat-value">${wCount}</div></div>
+          <div class="stat-tile"><div class="stat-label">📅 Days with Steps</div><div class="stat-value">${dCount}</div></div>
+          <div class="stat-tile"><div class="stat-label">⚡ Total kcal</div><div class="stat-value">${Object.values(data.energyByDate).reduce((s,v)=>s+v,0).toFixed(0)}</div></div>
+        </div>
+        <div style="margin-top:12px;font-size:.85rem;color:var(--text-muted)">
+          Preview of last 5 workouts:<br>
+          ${data.workouts.slice(-5).reverse().map(w =>
+            `<strong>${w.date}</strong>: ${w.type} — ${w.durationMin} min, ${w.kcal} kcal`
+          ).join('<br>')}
+        </div>`;
+      document.getElementById('confirm-import-btn').style.display = 'block';
+    } else if (data.type === 'csv') {
+      status.innerHTML = `<div class="alert alert-success">✅ CSV parsed — ${data.rows.length} rows</div>`;
+      preview.innerHTML = `<div class="alert alert-info">CSV import: check your column names match (date, calories, steps, distance). Click Import to process.</div>`;
+      document.getElementById('confirm-import-btn').style.display = 'block';
+    } else {
+      status.innerHTML = `<div class="alert alert-warning">Unknown format — try export.xml from Health app</div>`;
+    }
+  }
+
+  document.getElementById('confirm-import-btn').addEventListener('click', () => {
+    if (!parsedData) return;
+    if (parsedData.type === 'apple_health_xml') {
+      let added = 0;
+      parsedData.workouts.forEach(w => {
+        if (!w.date || !w.kcal) return;
+        const existing = Storage.getArray('workouts');
+        const dupe = existing.find(x => x.date === w.date && x.caloriesBurned === w.kcal && x.source === 'apple_health');
+        if (dupe) return;
+        Storage.appendToArray('workouts', {
+          id: App.uuid(),
+          type: 'activity',
+          activity: w.type.toLowerCase().includes('run') ? 'running' : w.type.toLowerCase().includes('walk') ? 'walking' : 'custom',
+          activityLabel: w.type,
+          duration: w.durationMin,
+          distanceKm: w.distanceKm || 0,
+          caloriesBurned: w.kcal,
+          date: w.date,
+          source: 'apple_health',
+          createdAt: new Date().toISOString(),
+        });
+        added++;
+      });
+      App.showToast(`✅ Imported ${added} workouts from Apple Health`);
+      document.getElementById('health-data-card').style.display = 'block';
+      Storage.set('apple_health_cache', parsedData);
+      renderHealthData();
+    }
+  });
+
+  function renderHealthData() {
+    const data = Storage.get('apple_health_cache');
+    if (!data) return;
+    document.getElementById('health-data-card').style.display = 'block';
+    if (data.type === 'apple_health_xml') {
+      const totalSteps = Object.values(data.stepsByDate).reduce((s,v)=>s+v,0);
+      const totalDist  = Object.values(data.distByDate).reduce((s,v)=>s+v,0);
+      document.getElementById('health-data-view').innerHTML = `
+        <div class="grid-3">
+          <div class="stat-tile"><div class="stat-label">👟 Total Steps</div><div class="stat-value">${Math.round(totalSteps).toLocaleString()}</div></div>
+          <div class="stat-tile"><div class="stat-label">🏃 Distance</div><div class="stat-value">${totalDist.toFixed(1)} km</div></div>
+          <div class="stat-tile"><div class="stat-label">🏋️ Workouts</div><div class="stat-value">${data.workouts.length}</div></div>
+        </div>`;
+    }
+  }
+
+  // ── Shortcut Generator ───────────────────────────────────
+  document.getElementById('gen-shortcut-btn').addEventListener('click', () => {
+    const user = document.getElementById('gh-user').value.trim();
+    const repo = document.getElementById('gh-repo').value.trim();
+    if (!user || !repo) { App.showToast('Enter your GitHub username and repo name', 'error'); return; }
+    const apiUrl = `https://api.github.com/repos/${user}/${repo}/contents/data/health.json`;
+    document.getElementById('shortcut-output').innerHTML = `
+      <div class="card" style="font-size:.85rem">
+        <div class="card-title">📋 iOS Shortcut Setup</div>
+        <p style="margin-bottom:12px">Create a new Shortcut on your iPhone with these steps:</p>
+        <ul class="steps-list">
+          <li><p><strong>Get Health Samples:</strong> Type = Steps, Date Range = Today</p></li>
+          <li><p><strong>Get Health Samples:</strong> Type = Active Energy Burned, Date Range = Today</p></li>
+          <li><p><strong>Get Health Samples:</strong> Type = Walking + Running Distance, Date Range = Today</p></li>
+          <li><p><strong>Get Health Samples:</strong> Type = Exercise Minutes, Date Range = Today</p></li>
+          <li><p><strong>Text action:</strong> Build JSON manually or use Dictionary action with keys: <code>date, steps, activeEnergy, distance, exerciseMinutes</code></p></li>
+          <li><p><strong>Get Contents of URL:</strong><br>
+            URL: <code style="word-break:break-all">${apiUrl}</code><br>
+            Method: <code>PUT</code><br>
+            Headers: <code>Authorization: Bearer YOUR_PAT_HERE</code> and <code>Content-Type: application/json</code><br>
+            Body: JSON with <code>message</code>, <code>content</code> (base64 of your JSON), <code>sha</code> (from GET first)
+          </p></li>
+          <li><p>Set the Shortcut as a <strong>Personal Automation</strong> → Time of Day → Every night at 11:55 PM</p></li>
+        </ul>
+        <div class="alert alert-warning" style="margin-top:12px">
+          ⚠️ Never share your GitHub PAT. Set it to expire and use minimal scope (only <em>Contents: Read & Write</em> for this repo).
+        </div>
+        <p style="margin-top:8px;color:var(--text-muted)">API endpoint: <code style="word-break:break-all">${apiUrl}</code></p>
+      </div>`;
+  });
+
+  // ── Auto-read health.json from same origin ────────────────
+  document.getElementById('check-sync-btn').addEventListener('click', async () => {
+    const el = document.getElementById('gh-sync-result');
+    el.innerHTML = '<p style="color:var(--text-muted)">⏳ Checking for health.json…</p>';
+    try {
+      const res = await fetch('./data/health.json?t=' + Date.now());
+      if (!res.ok) throw new Error('Not found');
+      const data = await res.json();
+      Storage.set('health_json_sync', data);
+      el.innerHTML = `<div class="alert alert-success">✅ Found synced health data!<br>
+        <strong>Date:</strong> ${data.date || 'unknown'}<br>
+        <strong>Steps:</strong> ${data.steps || 'N/A'}<br>
+        <strong>Active Energy:</strong> ${data.activeEnergy || 'N/A'} kcal<br>
+        <strong>Distance:</strong> ${data.distance || 'N/A'} km<br>
+        <strong>Exercise:</strong> ${data.exerciseMinutes || 'N/A'} min
+      </div>`;
+      // Auto-add to workout log if energy > 0
+      if (data.activeEnergy && data.date) {
+        const existing = Storage.getArray('workouts').find(w => w.date === data.date && w.source === 'health_json');
+        if (!existing) {
+          Storage.appendToArray('workouts', {
+            id: App.uuid(), type: 'activity', activity: 'custom',
+            activityLabel: '🍎 Apple Health (auto-sync)',
+            duration: data.exerciseMinutes || 0,
+            distanceKm: parseFloat(data.distance) || 0,
+            caloriesBurned: Math.round(parseFloat(data.activeEnergy) || 0),
+            date: data.date, source: 'health_json', createdAt: new Date().toISOString(),
+          });
+          el.innerHTML += `<div class="alert alert-info" style="margin-top:8px">✅ Auto-imported today's Apple Health workout</div>`;
+        }
+      }
+    } catch {
+      el.innerHTML = `<div class="alert alert-warning">
+        📭 No <code>data/health.json</code> found yet.<br>
+        Set up the iOS Shortcut above to push your data daily.
+      </div>`;
+    }
+  });
+
+  // Show cached health data if exists
+  renderHealthData();
+})();
+</script>
+</body>
+</html>
